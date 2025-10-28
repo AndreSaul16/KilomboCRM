@@ -1,466 +1,521 @@
-# Arquitectura del Proyecto KilomboCRM
+# Arquitectura del Sistema KilomboCRM
 
-## 1. Visión General
+## Visión General
 
-KilomboCRM es una aplicación de escritorio Java que implementa un sistema de gestión de clientes y pedidos siguiendo los principios de **Clean Architecture** y **Clean Code**.
+KilomboCRM es un sistema de gestión de clientes y pedidos implementado siguiendo los principios de **Clean Architecture** (Arquitectura Limpia) propuestos por Robert C. Martin. Esta arquitectura garantiza la separación de responsabilidades, facilita el mantenimiento, testing y evolución del sistema.
 
-## 2. Principios Arquitectónicos
+## Principios Arquitectónicos
 
-### Clean Architecture
-La aplicación se estructura en capas concéntricas donde las dependencias apuntan hacia el centro:
+### 1. Separación de Responsabilidades
+- **Regla de Dependencia**: Las dependencias apuntan hacia adentro, nunca hacia afuera. Los círculos internos no conocen nada de los círculos externos.
+- **Principio de Inversión de Dependencias**: Los módulos de alto nivel no dependen de módulos de bajo nivel. Ambos dependen de abstracciones.
 
-```
-┌─────────────────────────────────────────┐
-│     Presentación (UI - Swing)           │
-├─────────────────────────────────────────┤
-│     Aplicación (Casos de Uso)           │
-├─────────────────────────────────────────┤
-│     Dominio (Entidades + Interfaces)    │
-├─────────────────────────────────────────┤
-│     Infraestructura (BD + DAOs)         │
-└─────────────────────────────────────────┘
-```
-
-### Clean Code
-- Nombres descriptivos y significativos
-- Funciones pequeñas con una única responsabilidad
-- Comentarios solo cuando sea necesario
-- Manejo adecuado de excepciones
-- Código DRY (Don't Repeat Yourself)
-
-## 3. Estructura del Proyecto
+### 2. Capas Arquitectónicas
 
 ```
-KilomboCRM/
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   └── com/
-│   │   │       └── kilombo/
-│   │   │           └── crm/
-│   │   │               ├── domain/              # Capa de Dominio
-│   │   │               │   ├── model/           # Entidades
-│   │   │               │   │   ├── Cliente.java
-│   │   │               │   │   └── Pedido.java
-│   │   │               │   ├── repository/      # Interfaces (puertos)
-│   │   │               │   │   ├── ClienteRepository.java
-│   │   │               │   │   └── PedidoRepository.java
-│   │   │               │   └── exception/       # Excepciones de dominio
-│   │   │               │       ├── ClienteNotFoundException.java
-│   │   │               │       ├── PedidoNotFoundException.java
-│   │   │               │       └── ValidationException.java
-│   │   │               │
-│   │   │               ├── application/         # Capa de Aplicación
-│   │   │               │   ├── service/         # Servicios/Casos de uso
-│   │   │               │   │   ├── ClienteService.java
-│   │   │               │   │   └── PedidoService.java
-│   │   │               │   └── dto/             # Data Transfer Objects
-│   │   │               │       ├── ClienteDTO.java
-│   │   │               │       └── PedidoDTO.java
-│   │   │               │
-│   │   │               ├── infrastructure/      # Capa de Infraestructura
-│   │   │               │   ├── database/        # Gestión de BD
-│   │   │               │   │   ├── ConexionBD.java
-│   │   │               │   │   └── DatabaseConfig.java
-│   │   │               │   ├── repository/      # Implementaciones DAO
-│   │   │               │   │   ├── ClienteRepositoryImpl.java
-│   │   │               │   │   └── PedidoRepositoryImpl.java
-│   │   │               │   └── mapper/          # Mapeo BD <-> Entidad
-│   │   │               │       ├── ClienteMapper.java
-│   │   │               │       └── PedidoMapper.java
-│   │   │               │
-│   │   │               └── presentation/        # Capa de Presentación
-│   │   │                   ├── MainFrame.java   # Ventana principal
-│   │   │                   ├── panel/           # Paneles de UI
-│   │   │                   │   ├── ClientePanel.java
-│   │   │                   │   └── PedidoPanel.java
-│   │   │                   ├── dialog/          # Diálogos
-│   │   │                   │   ├── ClienteDialog.java
-│   │   │                   │   └── PedidoDialog.java
-│   │   │                   ├── table/           # Modelos de tabla
-│   │   │                   │   ├── ClienteTableModel.java
-│   │   │                   │   └── PedidoTableModel.java
-│   │   │                   └── util/            # Utilidades UI
-│   │   │                       ├── SwingUtils.java
-│   │   │                       └── ValidationUI.java
-│   │   │
-│   │   └── resources/
-│   │       ├── application.properties           # Configuración
-│   │       └── database/
-│   │           ├── schema.sql                   # Creación de tablas
-│   │           └── data.sql                     # Datos iniciales
-│   │
-│   └── test/
-│       └── java/
-│           └── com/
-│               └── kilombo/
-│                   └── crm/
-│                       ├── service/              # Tests de servicios
-│                       └── repository/           # Tests de repositorios
-│
-├── pom.xml                                      # Configuración Maven
-├── README.md                                    # Documentación principal
-└── ARQUITECTURA.md                              # Este documento
+┌─────────────────────────────────────┐
+│         PRESENTATION LAYER          │  ← Interfaz de Usuario (Swing)
+│   (Frameworks & Drivers)            │
+├─────────────────────────────────────┤
+│         APPLICATION LAYER           │  ← Casos de Uso & Servicios
+│   (Use Cases & Business Rules)      │
+├─────────────────────────────────────┤
+│         DOMAIN LAYER                │  ← Entidades & Reglas de Negocio
+│   (Entities & Business Rules)       │
+├─────────────────────────────────────┤
+│         INFRASTRUCTURE LAYER        │  ← Persistencia & Frameworks
+│   (Database & External Concerns)    │
+└─────────────────────────────────────┘
 ```
 
-## 4. Descripción de Capas
+## Detalle de Cada Capa
 
-### 4.1 Capa de Dominio (domain)
-**Responsabilidad**: Contiene la lógica de negocio pura y las reglas del dominio.
+### 1. Capa de Dominio (Domain Layer)
 
-- **model**: Entidades del dominio ([`Cliente`](src/main/java/com/kilombo/crm/domain/model/Cliente.java), [`Pedido`](src/main/java/com/kilombo/crm/domain/model/Pedido.java))
-  - Sin dependencias externas
-  - Validaciones de negocio
-  - Inmutabilidad cuando sea posible
+**Ubicación**: `src/main/java/com/kilombo/crm/domain/`
 
-- **repository**: Interfaces que definen contratos de persistencia
-  - Principio de Inversión de Dependencias
-  - El dominio define QUÉ necesita, no CÓMO se implementa
+**Responsabilidades**:
+- Contiene las reglas de negocio puras.
+- Define las entidades principales del sistema.
+- Establece contratos (interfaces) para la persistencia.
+- Es independiente de frameworks externos.
 
-- **exception**: Excepciones específicas del dominio
-  - Excepciones checked para errores recuperables
-  - Mensajes descriptivos
+#### Entidades Principales
 
-### 4.2 Capa de Aplicación (application)
-**Responsabilidad**: Orquesta el flujo de datos entre capas.
+**Cliente** (`Cliente.java`):
+```java
+public class Cliente {
+    private Integer id;
+    private String nombre;
+    private String apellido;
+    private String email;
+    private String telefono;
 
-- **service**: Casos de uso de la aplicación
-  - [`ClienteService`](src/main/java/com/kilombo/crm/application/service/ClienteService.java): CRUD de clientes
-  - [`PedidoService`](src/main/java/com/kilombo/crm/application/service/PedidoService.java): CRUD de pedidos + consulta por cliente
-  - Transacciones
-  - Validaciones de aplicación
-
-- **dto**: Objetos de transferencia de datos
-  - Desacopla la UI del dominio
-  - Facilita la serialización
-
-### 4.3 Capa de Infraestructura (infrastructure)
-**Responsabilidad**: Implementa detalles técnicos y frameworks.
-
-- **database**: Gestión de conexiones
-  - [`ConexionBD`](src/main/java/com/kilombo/crm/infrastructure/database/ConexionBD.java): Singleton para conexión MySQL
-  - Pool de conexiones (opcional con HikariCP)
-  - Configuración externalizada
-
-- **repository**: Implementaciones DAO
-  - Patrón DAO para acceso a datos
-  - Uso de PreparedStatement (seguridad SQL injection)
-  - Manejo de transacciones
-
-- **mapper**: Conversión entre capas
-  - ResultSet → Entidad
-  - Entidad → PreparedStatement
-
-### 4.4 Capa de Presentación (presentation)
-**Responsabilidad**: Interfaz gráfica Swing.
-
-- **MainFrame**: Ventana principal con menú y navegación
-- **panel**: Paneles reutilizables para cada entidad
-  - Tablas con datos
-  - Botones de acción (CRUD)
-  - Filtros y búsquedas
-
-- **dialog**: Diálogos modales para formularios
-  - Validación en tiempo real
-  - Mensajes de error claros
-
-- **table**: Modelos personalizados de JTable
-  - AbstractTableModel
-  - Actualización dinámica
-
-## 5. Patrones de Diseño Aplicados
-
-### 5.1 Singleton
-- [`ConexionBD`](src/main/java/com/kilombo/crm/infrastructure/database/ConexionBD.java): Una única instancia de conexión
-
-### 5.2 DAO (Data Access Object)
-- Abstracción del acceso a datos
-- Interfaces en dominio, implementaciones en infraestructura
-
-### 5.3 Service Layer
-- Encapsula lógica de negocio
-- Coordina múltiples repositorios
-
-### 5.4 DTO (Data Transfer Object)
-- Transferencia de datos entre capas
-- Evita exponer entidades de dominio
-
-### 5.5 Factory (opcional)
-- Creación de objetos complejos
-- Centraliza la lógica de construcción
-
-### 5.6 Observer (Swing)
-- Listeners para eventos de UI
-- Actualización reactiva de componentes
-
-## 6. Flujo de Datos
-
-### Ejemplo: Crear un Cliente
-
+    // Reglas de negocio: validaciones de email, teléfono, etc.
+    public boolean isEmailValid() { /* implementación */ }
+    public boolean isTelefonoValid() { /* implementación */ }
+}
 ```
-[UI] ClienteDialog
-    ↓ (usuario completa formulario)
-[UI] Validación básica
-    ↓ (datos válidos)
-[Service] ClienteService.crearCliente(ClienteDTO)
-    ↓ (convierte DTO → Entidad)
-[Domain] Cliente (validaciones de negocio)
-    ↓ (entidad válida)
-[Repository] ClienteRepository.save(Cliente)
-    ↓ (implementación)
-[Infrastructure] ClienteRepositoryImpl
-    ↓ (SQL INSERT)
-[Database] MySQL
-    ↓ (retorna ID generado)
-[Infrastructure] Retorna Cliente con ID
-    ↓
-[Service] Retorna ClienteDTO
-    ↓
-[UI] Actualiza tabla y muestra mensaje
+Esta entidad encapsula toda la lógica de negocio relacionada con clientes, incluyendo validaciones de formato de email y teléfono. Contribuye a la robustez del sistema al centralizar las reglas de negocio en el dominio, evitando duplicación de lógica de validación en diferentes capas y facilitando cambios futuros en las reglas de negocio sin afectar otras partes del sistema.
+
+**Pedido** (`Pedido.java`):
+```java
+public class Pedido {
+    private Integer id;
+    private Integer idCliente;
+    private LocalDate fecha;
+    private BigDecimal total;
+    private EstadoPedido estado;
+
+    // Reglas de negocio: cálculo de totales, estados válidos
+    public void calcularTotal() { /* implementación */ }
+    public boolean puedeSerCancelado() { /* implementación */ }
+}
 ```
+Representa la lógica de negocio de pedidos, incluyendo transiciones de estado válidas y cálculos de totales. Mejora la robustez al validar automáticamente las reglas de negocio (como no poder cancelar pedidos ya completados) y mantener la consistencia de datos, previniendo estados inválidos que podrían corromper la integridad de la información comercial.
 
-## 7. Gestión de Excepciones
+#### Interfaces de Repositorio
 
-### Jerarquía de Excepciones
-
+**ClienteRepository**:
+```java
+public interface ClienteRepository {
+    Cliente save(Cliente cliente);
+    Optional<Cliente> findById(Integer id);
+    List<Cliente> findAll();
+    void update(Cliente cliente);
+    void deleteById(Integer id);
+    boolean existsByEmail(String email);
+}
 ```
-Exception
-└── RuntimeException
-    └── CRMException (base)
-        ├── ValidationException
-        ├── ClienteNotFoundException
-        ├── PedidoNotFoundException
-        └── DatabaseException
+Esta interfaz abstrae el acceso a datos de clientes, permitiendo cambiar la implementación de persistencia (MySQL, PostgreSQL, memoria) sin afectar la lógica de negocio. Contribuye a la robustez al proporcionar un contrato claro que garantiza consistencia en las operaciones de datos y facilita el testing mediante mocks.
+
+**PedidoRepository**:
+```java
+public interface PedidoRepository {
+    Pedido save(Pedido pedido);
+    Optional<Pedido> findById(Integer id);
+    List<Pedido> findAll();
+    List<Pedido> findByClienteId(Integer idCliente);
+    void update(Pedido pedido);
+    void deleteById(Integer id);
+    int countByClienteId(Integer idCliente);
+    BigDecimal sumTotalByClienteId(Integer idCliente);
+}
 ```
+Define el contrato para operaciones de pedidos, incluyendo consultas especializadas como búsqueda por cliente y cálculos agregados. Mejora la robustez del sistema al centralizar todas las operaciones de datos de pedidos, facilitando optimizaciones de rendimiento y mantenimiento de consultas complejas en un solo lugar.
 
-### Estrategia de Manejo
+#### Excepciones de Dominio
 
-1. **Capa de Dominio**: Lanza excepciones de negocio
-2. **Capa de Aplicación**: Captura y transforma excepciones
-3. **Capa de Infraestructura**: Captura SQLException y lanza DatabaseException
-4. **Capa de Presentación**: Muestra mensajes amigables al usuario
+- `ClienteNotFoundException`: Cliente no encontrado.
+- `PedidoNotFoundException`: Pedido no encontrado.
+- `DatabaseException`: Errores de base de datos.
+- `ValidationException`: Errores de validación de negocio.
 
-## 8. Validaciones
+### 2. Capa de Aplicación (Application Layer)
 
-### Validaciones de Dominio (Cliente)
-- Nombre: no vacío, máx 100 caracteres
-- Apellido: no vacío, máx 100 caracteres
-- Email: formato válido, único, máx 150 caracteres
-- Teléfono: formato válido, máx 20 caracteres
+**Ubicación**: `src/main/java/com/kilombo/crm/application/`
 
-### Validaciones de Dominio (Pedido)
-- Cliente: debe existir
-- Fecha: no nula, no futura
-- Total: mayor que 0
+**Responsabilidades**:
+- Coordina la ejecución de casos de uso.
+- Contiene la lógica de aplicación (no de negocio puro).
+- Gestiona transacciones y orquestación.
+- Transforma datos entre capas usando DTOs.
 
-### Validaciones de UI
-- Campos obligatorios marcados con *
-- Validación en tiempo real
-- Mensajes de error específicos
+#### Servicios
 
-## 9. Configuración de Base de Datos H2
+**ClienteService**:
+```java
+@Service
+public class ClienteService {
+    private final ClienteRepository clienteRepository;
+
+    public ClienteDTO crearCliente(ClienteDTO dto) {
+        // Validación de negocio
+        validarCliente(dto);
+
+        // Transformación DTO → Entity
+        Cliente cliente = ClienteMapper.toEntity(dto);
+
+        // Persistencia
+        Cliente guardado = clienteRepository.save(cliente);
+
+        // Transformación Entity → DTO
+        return ClienteMapper.toDTO(guardado);
+    }
+
+    public List<ClienteDTO> listarClientes() {
+        List<Cliente> clientes = clienteRepository.findAll();
+        return clientes.stream()
+                .map(ClienteMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+}
+```
+Orquesta las operaciones de negocio de clientes, coordinando validaciones, transformaciones de datos y persistencia. Contribuye a la robustez al centralizar la lógica de aplicación, manejar transacciones de manera consistente y proporcionar una interfaz clara para la capa de presentación, facilitando cambios en las reglas de negocio sin afectar otras capas.
+
+**PedidoService**:
+```java
+@Service
+public class PedidoService {
+    private final PedidoRepository pedidoRepository;
+    private final ClienteRepository clienteRepository;
+
+    public PedidoDTO crearPedido(PedidoDTO dto) {
+        // Validar que el cliente existe
+        Cliente cliente = clienteRepository.findById(dto.getIdCliente())
+                .orElseThrow(() -> new ClienteNotFoundException(dto.getIdCliente()));
+
+        // Calcular total si no viene especificado
+        if (dto.getTotal() == null) {
+            dto.setTotal(calcularTotalPedido(dto));
+        }
+
+        // Transformación y persistencia
+        Pedido pedido = PedidoMapper.toEntity(dto);
+        Pedido guardado = pedidoRepository.save(pedido);
+
+        return PedidoMapper.toDTO(guardado);
+    }
+}
+```
+Gestiona la lógica compleja de pedidos, incluyendo validaciones cruzadas entre entidades (verificar existencia de cliente) y cálculos automáticos. Mejora la robustez al garantizar la integridad referencial, manejar cálculos de totales de forma centralizada y proporcionar una capa de abstracción que facilita el mantenimiento y evolución de las reglas de negocio de pedidos.
+
+#### DTOs (Data Transfer Objects)
+
+**ClienteDTO**:
+```java
+public class ClienteDTO {
+    private Integer id;
+    private String nombre;
+    private String apellido;
+    private String email;
+    private String telefono;
+
+    // Validaciones de entrada
+    @NotBlank @Size(max = 100)
+    private String nombre;
+
+    @NotBlank @Email
+    private String email;
+}
+```
+Transfiere datos de clientes entre capas sin exponer la entidad de dominio. Contribuye a la robustez al desacoplar la estructura interna del dominio de los contratos externos, permitiendo cambios en la entidad sin afectar APIs y facilitando validaciones específicas de entrada/salida.
+
+**PedidoDTO**:
+```java
+public class PedidoDTO {
+    private Integer id;
+    private Integer idCliente;
+    private LocalDate fecha;
+    private BigDecimal total;
+    private EstadoPedido estado;
+
+    // Relación con cliente
+    private ClienteDTO cliente;
+}
+```
+Facilita la transferencia de datos complejos de pedidos incluyendo relaciones. Mejora la robustez al proporcionar una vista controlada de los datos, optimizar serialización para APIs y permitir validaciones específicas de transporte de datos sin comprometer la lógica de dominio.
+
+### 3. Capa de Infraestructura (Infrastructure Layer)
+
+**Ubicación**: `src/main/java/com/kilombo/crm/infrastructure/`
+
+**Responsabilidades**:
+- Implementa las interfaces definidas en el dominio.
+- Maneja la persistencia de datos.
+- Gestiona conexiones externas (BD, APIs, etc.).
+- Contiene adaptadores para frameworks externos.
+
+#### Persistencia - Repositorios
+
+**ClienteRepositoryImpl**:
+```java
+@Repository
+public class ClienteRepositoryImpl implements ClienteRepository {
+    private static final Logger logger = Logger.getLogger(ClienteRepositoryImpl.class.getName());
+
+    @Override
+    public Cliente save(Cliente cliente) {
+        String sql = "INSERT INTO clientes (nombre, apellido, email, telefono) VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = ConexionBD.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            ClienteMapper.toStatement(stmt, cliente);
+            int affectedRows = stmt.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new DatabaseException("No se pudo guardar el cliente");
+            }
+
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    cliente.setId(generatedKeys.getGeneratedKeys().getInt(1));
+                }
+            }
+
+            return cliente;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error SQL al guardar cliente", e);
+            throw new DatabaseException("Error al guardar el cliente", e);
+        }
+    }
+}
+```
+Implementa el acceso a datos de clientes usando JDBC puro. Contribuye a la robustez mediante manejo exhaustivo de errores, uso de PreparedStatements para prevenir SQL injection, logging detallado para debugging y gestión automática de recursos con try-with-resources, garantizando conexiones seguras y eficientes.
+
+#### Mappers
+
+**ClienteMapper**:
+```java
+public class ClienteMapper {
+    public static ClienteDTO toDTO(Cliente entity) {
+        return ClienteDTO.builder()
+                .id(entity.getId())
+                .nombre(entity.getNombre())
+                .apellido(entity.getApellido())
+                .email(entity.getEmail())
+                .telefono(entity.getTelefono())
+                .build();
+    }
+
+    public static Cliente toEntity(ClienteDTO dto) {
+        return Cliente.builder()
+                .id(dto.getId())
+                .nombre(dto.getNombre())
+                .apellido(dto.getApellido())
+                .email(dto.getEmail())
+                .telefono(dto.getTelefono())
+                .build();
+    }
+
+    public static void toStatement(PreparedStatement stmt, Cliente cliente) throws SQLException {
+        stmt.setString(1, cliente.getNombre());
+        stmt.setString(2, cliente.getApellido());
+        stmt.setString(3, cliente.getEmail());
+        stmt.setString(4, cliente.getTelefono());
+    }
+
+    public static Cliente fromResultSet(ResultSet rs) throws SQLException {
+        return Cliente.builder()
+                .id(rs.getInt("id"))
+                .nombre(rs.getString("nombre"))
+                .apellido(rs.getString("apellido"))
+                .email(rs.getString("email"))
+                .telefono(rs.getString("telefono"))
+                .build();
+    }
+}
+```
+Convierte entre objetos de dominio, DTOs y estructuras de BD. Contribuye a la robustez al centralizar las transformaciones de datos, evitar código duplicado en conversiones, manejar tipos de datos específicos de cada capa y facilitar el mantenimiento cuando cambian los esquemas de BD o contratos de API.
+
+#### Conexión a Base de Datos
+
+**ConexionBD** (Singleton Pattern):
+```java
+public class ConexionBD {
+    private static ConexionBD instance;
+    private Connection connection;
+
+    private ConexionBD() {
+        // Cargar configuración desde application.properties
+        Properties properties = new Properties();
+        // Configurar URL, usuario, password, driver
+
+        // Cargar driver JDBC
+        Class.forName(driver);
+
+        // Configurar conexión con pool y reintentos
+    }
+
+    public static ConexionBD getInstance() {
+        if (instance == null) {
+            synchronized (ConexionBD.class) {
+                if (instance == null) {
+                    instance = new ConexionBD();
+                }
+            }
+        }
+        return instance;
+    }
+
+    public Connection getConnection() {
+        // Implementar reintentos, validación de esquema, etc.
+    }
+}
+```
+Gestiona conexiones a BD de forma centralizada y thread-safe. Contribuye a la robustez mediante patrón Singleton para evitar múltiples conexiones simultáneas, reintentos automáticos en fallos de conexión, validación de esquema al conectar, timeouts configurables y pool de conexiones eficiente, garantizando alta disponibilidad y rendimiento.
+
+### 4. Capa de Presentación (Presentation Layer)
+
+**Ubicación**: `src/main/java/com/kilombo/crm/presentation/`
+
+**Responsabilidades**:
+- Gestiona la interfaz de usuario.
+- Maneja eventos del usuario.
+- Coordina con la capa de aplicación.
+- Presenta datos al usuario.
+
+#### Componentes Swing
+
+**MainFrame**:
+```java
+public class MainFrame extends JFrame {
+    private ClienteService clienteService;
+    private PedidoService pedidoService;
+
+    public MainFrame() {
+        initServices();
+        initComponents();
+        setupEventHandlers();
+    }
+
+    private void initServices() {
+        // Inyección de dependencias manual
+        ClienteRepository clienteRepo = new ClienteRepositoryImpl();
+        PedidoRepository pedidoRepo = new PedidoRepositoryImpl();
+
+        this.clienteService = new ClienteService(clienteRepo);
+        this.pedidoService = new PedidoService(pedidoRepo, clienteRepo);
+    }
+}
+```
+Ventana principal que coordina toda la aplicación Swing. Contribuye a la robustez mediante inyección manual de dependencias que facilita testing, gestión centralizada de servicios, manejo de eventos de ventana y coordinación entre diferentes paneles, proporcionando una experiencia de usuario coherente y manejable.
+
+**ClientePanel**:
+```java
+public class ClientePanel extends JPanel {
+    private JTable tablaClientes;
+    private ClienteTableModel tableModel;
+    private JButton btnNuevo, btnEditar, btnEliminar;
+
+    public ClientePanel(ClienteService clienteService) {
+        this.clienteService = clienteService;
+        initComponents();
+        cargarClientes();
+    }
+
+    private void cargarClientes() {
+        List<ClienteDTO> clientes = clienteService.listarClientes();
+        tableModel.setClientes(clientes);
+    }
+}
+```
+Panel especializado en gestión de clientes con interfaz rica. Mejora la robustez al proporcionar validación visual de datos, manejo de errores de usuario, actualización automática de vistas tras operaciones CRUD y separación clara entre lógica de presentación y negocio, facilitando mantenimiento y evolución de la interfaz.
+
+## Patrones de Diseño Implementados
+
+### 1. Patrón Repository
+- Abstrae el acceso a datos.
+- Permite cambiar la implementación de persistencia sin afectar el dominio.
+- Facilita testing con mocks.
+
+### 2. Patrón Service Layer
+- Coordina operaciones complejas.
+- Maneja transacciones.
+- Centraliza lógica de aplicación.
+
+### 3. Patrón DTO
+- Transfiere datos entre capas.
+- Evita exponer entidades de dominio.
+- Optimiza serialización.
+
+### 4. Patrón Singleton
+- Gestiona instancia única de conexión a BD.
+- Thread-safe con doble verificación.
+
+### 5. Patrón Factory
+- Crea instancias de servicios y repositorios.
+- Centraliza configuración de dependencias.
+
+### 6. Patrón Observer
+- Maneja eventos en la interfaz gráfica.
+- Separa lógica de presentación de lógica de negocio.
+
+## Configuración y Dependencias
 
 ### application.properties
 ```properties
-# Configuración de Base de Datos H2 Embebida
-db.url=jdbc:h2:~/kilombocrm;DB_CLOSE_ON_EXIT=FALSE;AUTO_SERVER=TRUE
-db.username=sa
-db.password=
-db.driver=org.h2.Driver
+# Base de datos
+db.url=jdbc:mysql://localhost:3306/kilombo?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8
+db.username=admin
+db.password=admin
+db.driver=com.mysql.cj.jdbc.Driver
 
-# Configuración de Conexiones Robusta
-db.pool.size=10
-db.pool.timeout=30000
+# Pool de conexiones
+db.initialSize=5
+db.maxActive=20
+db.maxIdle=10
+db.minIdle=5
+db.maxWait=10000
 ```
 
-### Características de H2 Implementadas
-- **Base de datos embebida**: No requiere instalación separada
-- **Auto-creación**: Las tablas se crean automáticamente al iniciar
-- **Persistencia**: Los datos se guardan en `~/kilombocrm.mv.db`
-- **Modo servidor**: Permite conexiones remotas si es necesario
-- **Compatibilidad**: Soporta sintaxis SQL estándar
+### pom.xml
+```xml
+<dependencies>
+    <!-- MySQL Connector -->
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>8.0.33</version>
+    </dependency>
 
-## 10. Dependencias Maven
-
-### Principales
-- **H2 Database**: 2.2.224 (base de datos embebida)
-- **JUnit**: 5.9.3 (testing)
-- **Mockito**: 5.3.1 (testing)
-- **Java Logging**: java.util.logging (logging integrado, sin dependencias externas)
-
-### Ventajas de H2 para Aprendizaje
-- **Cero configuración**: No requiere instalación de servidor de BD
-- **Auto-inicialización**: Crea BD y tablas automáticamente
-- **Consola web**: Acceso vía navegador en http://localhost:8082
-- **Modo embebido**: Perfecto para aplicaciones de escritorio
-- **SQL estándar**: Compatible con la mayoría de sintaxis SQL
-
-## 11. Principios SOLID Aplicados
-
-### Single Responsibility Principle (SRP)
-- Cada clase tiene una única razón para cambiar
-- Servicios separados por entidad
-- DAOs específicos por tabla
-
-### Open/Closed Principle (OCP)
-- Interfaces para repositorios
-- Extensible sin modificar código existente
-
-### Liskov Substitution Principle (LSP)
-- Implementaciones intercambiables de repositorios
-- Contratos bien definidos
-
-### Interface Segregation Principle (ISP)
-- Interfaces específicas y cohesivas
-- No forzar implementaciones innecesarias
-
-### Dependency Inversion Principle (DIP)
-- Dependencias hacia abstracciones
-- Inyección de dependencias manual
-
-## 12. Mejoras Implementadas (Robustez)
-
-### ✅ Mejoras de Conexión y BD
-- [x] **Reintentos automáticos**: Hasta 3 intentos con backoff exponencial
-- [x] **Timeouts configurables**: 5 segundos para conexión y validación
-- [x] **Validación de esquema**: Verificación automática de tablas y estructura
-- [x] **Detección de datos corruptos**: Validación de integridad al iniciar
-- [x] **Logging integrado**: Sistema completo sin dependencias externas
-
-### ✅ Mejoras de Validación y Error Handling
-- [x] **Validaciones multinivel**: UI, aplicación, dominio y BD
-- [x] **Manejo de excepciones robusto**: Tipos específicos y recuperación automática
-- [x] **Mensajes de error informativos**: Feedback claro al usuario
-- [x] **Recuperación automática**: Reintentos en operaciones fallidas
-
-### ✅ Mejoras de UI/UX
-- [x] **Estados de carga**: Indicadores visuales durante operaciones
-- [x] **Mensajes contextuales**: Información específica según el error
-- [x] **Recuperación en UI**: Opción de reintentar operaciones fallidas
-- [x] **Validación en tiempo real**: Feedback inmediato en formularios
-
-## 13. Mejoras Futuras (Opcional)
-
-### Fase 2 (Funcionalidades)
-- [ ] Implementar paginación en listados grandes
-- [ ] Añadir búsqueda y filtros avanzados
-- [ ] Exportar datos a PDF/Excel/CSV
-- [ ] Implementar caché de datos (para mejorar rendimiento)
-- [ ] Añadir auditoría (quién/cuándo modificó registros)
-
-### Fase 3 (Avanzado - Nuevo Proyecto)
-- [ ] Migrar a Spring Boot (proyecto separado)
-- [ ] Añadir API REST con Spring Web
-- [ ] Implementar autenticación y autorización
-- [ ] Añadir tests unitarios completos con cobertura
-- [ ] CI/CD con GitHub Actions
-- [ ] Dockerizar la aplicación
-- [ ] Añadir monitoring con Spring Actuator
-
-### Fase 4 (Distribuido)
-- [ ] Microservicios con Spring Cloud
-- [ ] API Gateway
-- [ ] Service Discovery
-- [ ] Configuración centralizada
-- [ ] Logs centralizados
-
-## 13. Convenciones de Código
-
-### Nomenclatura
-- **Clases**: PascalCase (ej: [`ClienteService`](src/main/java/com/kilombo/crm/application/service/ClienteService.java))
-- **Métodos**: camelCase (ej: `crearCliente()`)
-- **Constantes**: UPPER_SNAKE_CASE (ej: `MAX_NOMBRE_LENGTH`)
-- **Paquetes**: lowercase (ej: `com.kilombo.crm.domain`)
-
-### Formato
-- Indentación: 4 espacios
-- Llaves: estilo Java (misma línea)
-- Líneas: máximo 120 caracteres
-- Imports: organizados y sin wildcards
-
-### Comentarios
-- JavaDoc para clases y métodos públicos
-- Comentarios inline solo cuando sea necesario
-- TODO/FIXME para tareas pendientes
-
-## 14. Diagrama de Arquitectura
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    PRESENTATION LAYER                        │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
-│  │  MainFrame   │  │ClientePanel  │  │ PedidoPanel  │      │
-│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘      │
-│         │                 │                  │               │
-└─────────┼─────────────────┼──────────────────┼───────────────┘
-          │                 │                  │
-          ▼                 ▼                  ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   APPLICATION LAYER                          │
-│         ┌──────────────────┐  ┌──────────────────┐          │
-│         │ ClienteService   │  │  PedidoService   │          │
-│         └────────┬─────────┘  └────────┬─────────┘          │
-│                  │                     │                     │
-└──────────────────┼─────────────────────┼─────────────────────┘
-                   │                     │
-                   ▼                     ▼
-┌─────────────────────────────────────────────────────────────┐
-│                     DOMAIN LAYER                             │
-│  ┌──────────┐  ┌──────────┐  ┌────────────────────────┐    │
-│  │ Cliente  │  │  Pedido  │  │ Repository Interfaces  │    │
-│  └──────────┘  └──────────┘  └────────────────────────┘    │
-│                                         ▲                    │
-└─────────────────────────────────────────┼────────────────────┘
-                                          │
-                                          │ implements
-┌─────────────────────────────────────────┼────────────────────┐
-│                 INFRASTRUCTURE LAYER    │                    │
-│  ┌──────────────┐  ┌──────────────────────────────────┐     │
-│  │  ConexionBD  │  │  Repository Implementations      │     │
-│  └──────┬───────┘  │  (ClienteDAO, PedidoDAO)         │     │
-│         │          └──────────────┬───────────────────┘     │
-│         │                         │                          │
-│         ▼                         ▼                          │
-│    ┌─────────────────────────────────────┐                  │
-│    │         MySQL Database              │                  │
-│    │  ┌──────────┐    ┌──────────┐      │                  │
-│    │  │ cliente  │    │  pedido  │      │                  │
-│    │  └──────────┘    └──────────┘      │                  │
-│    └─────────────────────────────────────┘                  │
-└─────────────────────────────────────────────────────────────┘
+    <!-- Validación -->
+    <dependency>
+        <groupId>org.hibernate.validator</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>6.2.5.Final</version>
+    </dependency>
+</dependencies>
 ```
 
-## 15. Conclusión - Arquitectura Robusta Implementada
+## Flujo de Datos Típico
 
-Esta arquitectura proporciona:
+1. **Usuario interactúa con UI** → `ClientePanel` captura evento.
+2. **UI llama a Servicio** → `ClienteService.crearCliente(dto)`.
+3. **Servicio valida y transforma** → Convierte DTO a Entity.
+4. **Servicio llama a Repositorio** → `ClienteRepository.save(entity)`.
+5. **Repositorio ejecuta SQL** → `ClienteRepositoryImpl.save()` usa JDBC.
+6. **BD persiste datos** → MySQL guarda el registro.
+7. **Respuesta fluye de vuelta** → Entity → DTO → UI.
 
-### ✅ Calidades Arquitectónicas
-- **Separación de responsabilidades**: Cada capa tiene un propósito claro y definido
-- **Testabilidad**: Fácil de probar cada componente independientemente
-- **Mantenibilidad**: Código organizado, documentado y fácil de entender
-- **Escalabilidad**: Preparado para crecer con nuevas funcionalidades
-- **Flexibilidad**: Fácil cambiar implementaciones sin afectar otras capas
+## Ventajas de Esta Arquitectura
 
-### ✅ Robustez Implementada
-- **Manejo de errores completo**: Excepciones específicas y recuperación automática
-- **Validaciones multinivel**: UI, aplicación, dominio y base de datos
-- **Gestión de conexiones robusta**: Reintentos, timeouts y validación de esquema
-- **Logging integrado**: Seguimiento completo de operaciones críticas
-- **Recuperación automática**: La aplicación continúa funcionando tras errores temporales
+### Mantenibilidad
+- Cambios en UI no afectan negocio.
+- Cambios en BD no afectan dominio.
+- Código modular y fácil de entender.
 
-### ✅ Enfoque Educativo
-- **Proyecto completo**: Desde la arquitectura hasta la implementación
-- **Documentación extensa**: Múltiples documentos para diferentes niveles de aprendizaje
-- **Ejemplos reales**: Aplicación de patrones y principios en código funcional
-- **Mejores prácticas**: Código limpio, profesional y mantenible
-- **Progresión de aprendizaje**: Desde conceptos básicos hasta avanzados
+### Testabilidad
+- Cada capa se puede testear independientemente.
+- Mocks para repositorios en tests de servicios.
+- Tests de integración para flujos completos.
 
-### 🎯 Resultado Final
-El proyecto combina lo mejor de ambos mundos:
-- **Educativo**: Perfecto para juniors que aprenden desarrollo Java
-- **Profesional**: Código de calidad production-ready
-- **Completo**: Arquitectura, implementación, testing y documentación
-- **Robusto**: Manejo de errores y validaciones profesionales
-- **Escalable**: Preparado para futuras ampliaciones
+### Escalabilidad
+- Nuevas funcionalidades se agregan sin afectar existentes.
+- Capas se pueden escalar independientemente.
+- Fácil migración a microservicios.
 
-Este proyecto es un **ejemplo completo y real** de cómo desarrollar aplicaciones Java empresariales siguiendo las mejores prácticas de la industria, mientras sirve como material de aprendizaje excepcional para desarrolladores juniors.
+### Flexibilidad
+- BD se puede cambiar (MySQL → PostgreSQL) sin tocar dominio.
+- UI se puede cambiar (Swing → Web) sin afectar negocio.
+- Nuevos casos de uso se agregan fácilmente.
+
+## Consideraciones de Implementación
+
+### Manejo de Errores
+- Excepciones específicas por capa.
+- Logging centralizado.
+- Transacciones rollback en errores.
+
+### Seguridad
+- Validación de entrada en todas las capas.
+- PreparedStatements para prevenir SQL injection.
+- Control de acceso (preparado para futura implementación).
+
+### Rendimiento
+- Pool de conexiones configurado.
+- Consultas optimizadas con índices.
+- Lazy loading donde aplica.
+
+Esta arquitectura proporciona una base sólida para el crecimiento y mantenimiento del sistema KilomboCRM, siguiendo las mejores prácticas de desarrollo de software empresarial.

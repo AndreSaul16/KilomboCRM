@@ -13,12 +13,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Clase Singleton para gestionar la conexión a la base de datos H2 embebida.
+ * Clase Singleton para gestionar la conexión a la base de datos MySQL.
  * Implementa el patrón Singleton thread-safe con doble verificación.
  * Incluye reintentos automáticos, timeouts y validación de estructura.
  *
  * @author KilomboCRM Team
- * @version 2.0
+ * @version 2.1
  */
 public class ConexionBD {
 
@@ -83,7 +83,7 @@ public class ConexionBD {
     }
     
     /**
-     * Carga el driver JDBC de H2.
+     * Carga el driver JDBC de MySQL.
      *
      * @throws DatabaseException si no se puede cargar el driver
      */
@@ -92,7 +92,7 @@ public class ConexionBD {
             Class.forName(driver);
         } catch (ClassNotFoundException e) {
             throw new DatabaseException(
-                "No se pudo cargar el driver de H2: " + driver, e
+                "No se pudo cargar el driver de MySQL: " + driver, e
             );
         }
     }
@@ -232,8 +232,8 @@ public class ConexionBD {
             stmt.setQueryTimeout(VALIDATION_QUERY_TIMEOUT_S);
 
             // Verificar que las tablas existen y tienen estructura correcta
-            validateTableStructure(stmt, "cliente", "id", "nombre", "apellido", "email", "telefono");
-            validateTableStructure(stmt, "pedido", "id", "id_cliente", "fecha", "total");
+            validateTableStructure(stmt, "clientes", "id", "nombre", "apellido", "email", "telefono");
+            validateTableStructure(stmt, "pedidos", "id", "id_cliente", "fecha", "total");
 
             // Verificar integridad referencial básica
             validateReferentialIntegrity(stmt);
@@ -257,9 +257,9 @@ public class ConexionBD {
      * @throws SQLException si la validación falla
      */
     private void validateTableStructure(Statement stmt, String tableName, String... expectedColumns) throws SQLException {
-        // En H2, podemos verificar la estructura consultando INFORMATION_SCHEMA
+        // En MySQL, verificamos la estructura consultando INFORMATION_SCHEMA
         String query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS " +
-                      "WHERE TABLE_NAME = '" + tableName.toUpperCase() + "' ORDER BY ORDINAL_POSITION";
+                       "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '" + tableName + "' ORDER BY ORDINAL_POSITION";
 
         try (ResultSet rs = stmt.executeQuery(query)) {
             java.util.Set<String> actualColumns = new java.util.HashSet<>();
@@ -285,7 +285,7 @@ public class ConexionBD {
      */
     private void validateReferentialIntegrity(Statement stmt) throws SQLException {
         // Verificar que no hay pedidos huérfanos (sin cliente)
-        String orphanQuery = "SELECT COUNT(*) FROM pedido p LEFT JOIN cliente c ON p.id_cliente = c.id WHERE c.id IS NULL";
+        String orphanQuery = "SELECT COUNT(*) FROM pedidos p LEFT JOIN clientes c ON p.id_cliente = c.id WHERE c.id IS NULL";
         try (ResultSet rs = stmt.executeQuery(orphanQuery)) {
             if (rs.next() && rs.getInt(1) > 0) {
                 int orphanCount = rs.getInt(1);
@@ -295,7 +295,7 @@ public class ConexionBD {
         }
 
         // Verificar que los datos básicos son consistentes
-        String consistencyQuery = "SELECT COUNT(*) FROM cliente WHERE nombre IS NULL OR nombre = ''";
+        String consistencyQuery = "SELECT COUNT(*) FROM clientes WHERE nombre IS NULL OR nombre = ''";
         try (ResultSet rs = stmt.executeQuery(consistencyQuery)) {
             if (rs.next() && rs.getInt(1) > 0) {
                 int invalidCount = rs.getInt(1);
@@ -324,8 +324,8 @@ public class ConexionBD {
                 stmt.setQueryTimeout(VALIDATION_QUERY_TIMEOUT_S);
 
                 // Verificar que podemos hacer consultas básicas
-                stmt.executeQuery("SELECT COUNT(*) FROM cliente").close();
-                stmt.executeQuery("SELECT COUNT(*) FROM pedido").close();
+                stmt.executeQuery("SELECT COUNT(*) FROM clientes").close();
+                stmt.executeQuery("SELECT COUNT(*) FROM pedidos").close();
 
                 logger.info("Prueba de conexión exitosa");
                 return true;

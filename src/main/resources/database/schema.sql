@@ -1,75 +1,92 @@
 -- ============================================
 -- Script de Creación de Base de Datos
--- KilomboCRM - Sistema de Gestión
+-- Empresa 'Kilombo' - Clientes y Pedidos
 -- ============================================
 
--- Crear base de datos si no existe
-CREATE DATABASE IF NOT EXISTS empresa 
-CHARACTER SET utf8mb4 
+-- REQUISITO 1: Crear la base de datos 'kilombo'
+CREATE DATABASE IF NOT EXISTS kilombo
+CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 
 -- Usar la base de datos
-USE empresa;
+USE kilombo;
 
--- Eliminar tablas si existen (para recrear)
-DROP TABLE IF EXISTS pedido;
-DROP TABLE IF EXISTS cliente;
+-- Eliminar tablas si existen 
+DROP TABLE IF EXISTS detalles_pedido;
+DROP TABLE IF EXISTS pedidos;
+DROP TABLE IF EXISTS clientes;
 
 -- ============================================
--- Tabla: cliente
--- Descripción: Almacena información de clientes
+-- 1. Tabla: clientes
 -- ============================================
-CREATE TABLE cliente (
-    id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Identificador único del cliente',
-    nombre VARCHAR(100) NOT NULL COMMENT 'Nombre del cliente',
-    apellido VARCHAR(100) NOT NULL COMMENT 'Apellido del cliente',
-    email VARCHAR(150) NOT NULL UNIQUE COMMENT 'Email del cliente (único)',
-    telefono VARCHAR(20) COMMENT 'Teléfono de contacto',
-    
-    -- Índices para mejorar rendimiento
+CREATE TABLE clientes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100) NOT NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
+    telefono VARCHAR(20),
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_email (email),
-    INDEX idx_nombre_apellido (nombre, apellido),
-    INDEX idx_apellido (apellido)
+    INDEX idx_nombre_apellido (nombre, apellido)
 ) ENGINE=InnoDB 
 DEFAULT CHARSET=utf8mb4 
 COLLATE=utf8mb4_unicode_ci
-COMMENT='Tabla de clientes del sistema';
+COMMENT='Tabla de clientes del sistema Kilombo';
 
 -- ============================================
--- Tabla: pedido
--- Descripción: Almacena pedidos de clientes
+-- 2. Tabla: pedidos 
 -- ============================================
-CREATE TABLE pedido (
+CREATE TABLE pedidos (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Identificador único del pedido',
     id_cliente INT NOT NULL COMMENT 'Referencia al cliente',
     fecha DATE NOT NULL COMMENT 'Fecha del pedido',
-    total DOUBLE NOT NULL COMMENT 'Importe total del pedido',
+    -- Total calculado por Java, pero aquí lo ponemos como requerido por el enunciado
+    total DECIMAL(10, 2) NOT NULL COMMENT 'Importe total del pedido', 
+    estado ENUM('PENDIENTE', 'EN_PROCESO', 'COMPLETADO', 'CANCELADO') DEFAULT 'PENDIENTE',
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     
-    -- Clave foránea con eliminación en cascada
+    -- Clave foránea (REQUISITO: ON DELETE CASCADE)
     CONSTRAINT fk_pedido_cliente 
         FOREIGN KEY (id_cliente) 
-        REFERENCES cliente(id) 
+        REFERENCES clientes(id) 
         ON DELETE CASCADE 
         ON UPDATE CASCADE,
     
     -- Restricción: el total debe ser positivo
-    CONSTRAINT chk_total_positivo 
-        CHECK (total > 0),
+    CONSTRAINT chk_total_positivo CHECK (total > 0),
     
-    -- Índices para mejorar rendimiento
     INDEX idx_cliente (id_cliente),
     INDEX idx_fecha (fecha),
-    INDEX idx_cliente_fecha (id_cliente, fecha)
+    INDEX idx_estado (estado)
 ) ENGINE=InnoDB 
 DEFAULT CHARSET=utf8mb4 
 COLLATE=utf8mb4_unicode_ci
 COMMENT='Tabla de pedidos del sistema';
 
 -- ============================================
--- Verificación de tablas creadas
+-- 3. Tabla: detalles_pedido
+-- ============================================
+CREATE TABLE detalles_pedido (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_pedido INT NOT NULL,
+    tipo_producto VARCHAR(100) NOT NULL COMMENT 'Para personalización de mensajes (ej: Lavadora, Smartphone)',
+    descripcion VARCHAR(255) NOT NULL,
+    cantidad INT NOT NULL DEFAULT 1,
+    costo_unitario DECIMAL(10, 2) NOT NULL COMMENT 'Costo para la empresa (para BI)',
+    precio_unitario DECIMAL(10, 2) NOT NULL,
+    subtotal DECIMAL(10, 2) GENERATED ALWAYS AS (cantidad * precio_unitario) STORED COMMENT 'Columna generada: Venta total del item',
+    ganancia_bruta DECIMAL(10, 2) GENERATED ALWAYS AS (cantidad * (precio_unitario - costo_unitario)) STORED COMMENT 'Columna generada: Ganancia bruta del item',
+    
+    FOREIGN KEY (id_pedido) REFERENCES pedidos(id) ON DELETE CASCADE,
+    INDEX idx_pedido (id_pedido)
+) ENGINE=InnoDB 
+DEFAULT CHARSET=utf8mb4 
+COLLATE=utf8mb4_unicode_ci
+COMMENT='Tabla de detalle de ítems por pedido';
+
+-- ============================================
+-- Verificación del Esquema
 -- ============================================
 SHOW TABLES;
-
--- Mostrar estructura de las tablas
-DESCRIBE cliente;
-DESCRIBE pedido;

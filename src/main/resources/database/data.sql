@@ -1,104 +1,80 @@
 -- ============================================
--- Script de Datos Iniciales
--- KilomboCRM - Sistema de Gestión
+-- Script de Datos Iniciales - Base de Datos: kilombo
 -- ============================================
 
-USE empresa;
+-- IMPORTANTE: Usar la BBDD 'kilombo'
+USE kilombo;
+
+-- Configurar codificación UTF-8 para inserciones
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
 
 -- ============================================
--- Insertar datos en tabla cliente
+-- 1. Insertar datos en tabla clientes (8 Registros)
 -- ============================================
 
-INSERT INTO cliente (nombre, apellido, email, telefono) VALUES
-('Juan', 'García Martínez', 'juan.garcia@email.com', '+34 612 345 678'),
-('María', 'López Fernández', 'maria.lopez@email.com', '+34 623 456 789'),
-('Carlos', 'Rodríguez Sánchez', 'carlos.rodriguez@email.com', '+34 634 567 890'),
-('Ana', 'Martínez González', 'ana.martinez@email.com', '+34 645 678 901'),
-('Pedro', 'Sánchez Pérez', 'pedro.sanchez@email.com', '+34 656 789 012'),
-('Laura', 'Fernández Ruiz', 'laura.fernandez@email.com', '+34 667 890 123'),
-('Miguel', 'González Díaz', 'miguel.gonzalez@email.com', '+34 678 901 234'),
-('Carmen', 'Díaz Moreno', 'carmen.diaz@email.com', '+34 689 012 345');
+
+INSERT INTO clientes (nombre, apellido, email, telefono) VALUES
+('Juan', 'García Martínez', 'juan.garcia@kilombo.es', '+34 612 345 678'), -- ID 1
+('María', 'López Fernández', 'maria.lopez@kilombo.es', '+34 623 456 789'), -- ID 2
+('Carlos', 'Rodríguez Sánchez', 'carlos.rodriguez@kilombo.es', '+34 634 567 890'), -- ID 3
+('Ana', 'Martínez González', 'ana.martinez@kilombo.es', '+34 645 678 901'), -- ID 4
+('Pedro', 'Sánchez Pérez', 'pedro.sanchez@kilombo.es', '+34 656 789 012'), -- ID 5
+('Laura', 'Fernández Ruiz', 'laura.fernandez@kilombo.es', '+34 667 890 123'), -- ID 6
+('Miguel', 'González Díaz', 'miguel.gonzalez@kilombo.es', '+34 678 901 234'), -- ID 7
+('Carmen', 'Díaz Moreno', 'carmen.diaz@kilombo.es', '+34 689 012 345'); -- ID 8
 
 -- ============================================
--- Insertar datos en tabla pedido
+-- 2. Insertar datos en tabla pedidos (8 Registros)
 -- ============================================
 
--- Pedidos para Juan García (id_cliente = 1)
-INSERT INTO pedido (id_cliente, fecha, total) VALUES
-(1, '2024-01-15', 150.50),
-(1, '2024-02-20', 275.00),
-(1, '2024-03-10', 89.99);
+INSERT INTO pedidos (id_cliente, fecha, total, estado) VALUES
+(1, '2025-09-01', 599.99, 'COMPLETADO'),  -- ID 1
+(2, '2025-09-05', 125.00, 'EN_PROCESO'),   -- ID 2 (Seguimiento WhatsApp)
+(3, '2025-09-10', 1200.50, 'COMPLETADO'), -- ID 3 (BI)
+(4, '2025-09-12', 45.00, 'COMPLETADO'),   -- ID 4 (BI)
+(5, '2025-09-15', 350.00, 'PENDIENTE'),    -- ID 5
+(6, '2025-09-20', 850.25, 'COMPLETADO'),  -- ID 6 (BI)
+(7, '2025-09-22', 199.99, 'CANCELADO'),   -- ID 7
+(8, '2025-09-25', 1500.00, 'EN_PROCESO');  -- ID 8 (Seguimiento WhatsApp)
 
--- Pedidos para María López (id_cliente = 2)
-INSERT INTO pedido (id_cliente, fecha, total) VALUES
-(2, '2024-01-18', 320.75),
-(2, '2024-02-25', 450.00),
-(2, '2024-03-15', 125.50),
-(2, '2024-04-05', 199.99);
-
--- Pedidos para Carlos Rodríguez (id_cliente = 3)
-INSERT INTO pedido (id_cliente, fecha, total) VALUES
-(3, '2024-01-22', 500.00),
-(3, '2024-03-08', 350.25);
-
--- Pedidos para Ana Martínez (id_cliente = 4)
-INSERT INTO pedido (id_cliente, fecha, total) VALUES
-(4, '2024-02-10', 175.80),
-(4, '2024-03-20', 290.50),
-(4, '2024-04-12', 420.00);
-
--- Pedidos para Pedro Sánchez (id_cliente = 5)
-INSERT INTO pedido (id_cliente, fecha, total) VALUES
-(5, '2024-01-25', 680.00),
-(5, '2024-02-28', 125.75),
-(5, '2024-03-30', 310.50),
-(5, '2024-04-15', 95.99);
-
--- Pedidos para Laura Fernández (id_cliente = 6)
-INSERT INTO pedido (id_cliente, fecha, total) VALUES
-(6, '2024-02-05', 220.00),
-(6, '2024-03-12', 380.50);
-
--- Pedidos para Miguel González (id_cliente = 7)
-INSERT INTO pedido (id_cliente, fecha, total) VALUES
-(7, '2024-01-30', 540.25),
-(7, '2024-02-18', 165.00),
-(7, '2024-03-25', 275.80);
-
--- Pedidos para Carmen Díaz (id_cliente = 8)
-INSERT INTO pedido (id_cliente, fecha, total) VALUES
-(8, '2024-02-12', 890.00),
-(8, '2024-03-18', 450.75),
-(8, '2024-04-08', 320.50),
-(8, '2024-04-20', 175.25);
 
 -- ============================================
--- Verificación de datos insertados
+-- 3. Insertar datos en tabla detalles_pedido
 -- ============================================
 
--- Contar registros
-SELECT 'Clientes insertados:' AS Info, COUNT(*) AS Total FROM cliente;
-SELECT 'Pedidos insertados:' AS Info, COUNT(*) AS Total FROM pedido;
+-- Pedido 1: Smartwatch (Ganancia Bruta alta)
+INSERT INTO detalles_pedido (id_pedido, tipo_producto, descripcion, cantidad, costo_unitario, precio_unitario) VALUES
+(1, 'Smartwatch', 'Smartwatch GT3 Pro', 1, 350.00, 599.99); 
 
--- Mostrar algunos datos
-SELECT 'Primeros 5 clientes:' AS Info;
-SELECT id, nombre, apellido, email FROM cliente LIMIT 5;
+-- Pedido 2: EN_PROCESO (Accesorio)
+INSERT INTO detalles_pedido (id_pedido, tipo_producto, descripcion, cantidad, costo_unitario, precio_unitario) VALUES
+(2, 'Accesorio', 'Cable de carga USB-C', 5, 5.00, 10.00),
+(2, 'Accesorio', 'Cargador rápido PD', 5, 10.00, 15.00); 
 
-SELECT 'Primeros 5 pedidos:' AS Info;
-SELECT p.id, c.nombre, c.apellido, p.fecha, p.total 
-FROM pedido p
-INNER JOIN cliente c ON p.id_cliente = c.id
-LIMIT 5;
+-- Pedido 3: Portátil (Gran BI)
+INSERT INTO detalles_pedido (id_pedido, tipo_producto, descripcion, cantidad, costo_unitario, precio_unitario) VALUES
+(3, 'Portátil', 'Portátil Gaming i9', 1, 900.00, 1200.50);
 
--- Estadísticas por cliente
-SELECT 'Pedidos por cliente:' AS Info;
-SELECT 
-    c.id,
-    c.nombre,
-    c.apellido,
-    COUNT(p.id) AS num_pedidos,
-    COALESCE(SUM(p.total), 0) AS total_gastado
-FROM cliente c
-LEFT JOIN pedido p ON c.id_cliente = p.id
-GROUP BY c.id, c.nombre, c.apellido
-ORDER BY total_gastado DESC;
+-- Pedido 4: Cafetera
+INSERT INTO detalles_pedido (id_pedido, tipo_producto, descripcion, cantidad, costo_unitario, precio_unitario) VALUES
+(4, 'Cafetera', 'Cafetera automática', 1, 30.00, 45.00);
+
+-- Pedido 6: Televisor (BI)
+INSERT INTO detalles_pedido (id_pedido, tipo_producto, descripcion, cantidad, costo_unitario, precio_unitario) VALUES
+(6, 'Televisor', 'OLED 55 pulgadas 4K', 1, 600.00, 850.25);
+
+-- Pedido 8: Componentes (EN_PROCESO)
+INSERT INTO detalles_pedido (id_pedido, tipo_producto, descripcion, cantidad, costo_unitario, precio_unitario) VALUES
+(8, 'Componente', 'Memoria RAM 16GB', 2, 50.00, 75.00),
+(8, 'Componente', 'Tarjeta Gráfica RTX', 1, 800.00, 1200.00),
+(8, 'Componente', 'Fuente de Poder 800W', 1, 50.00, 75.00);
+
+
+-- ============================================
+-- Verificación
+-- ============================================
+
+SELECT 'Datos insertados correctamente en KILOMBO:' AS Info;
+SELECT COUNT(*) AS Total_Clientes FROM clientes;
+SELECT COUNT(*) AS Total_Pedidos FROM pedidos;

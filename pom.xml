@@ -21,17 +21,17 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- Dependency Versions -->
-        <h2.version>2.2.224</h2.version>
+        <mysql.version>8.0.33</mysql.version>
         <junit.version>5.9.3</junit.version>
         <mockito.version>5.3.1</mockito.version>
     </properties>
 
     <dependencies>
-        <!-- H2 Database -->
+        <!-- MySQL Connector/J -->
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>${h2.version}</version>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.version}</version>
         </dependency>
 
         <!-- JUnit 5 para Testing -->

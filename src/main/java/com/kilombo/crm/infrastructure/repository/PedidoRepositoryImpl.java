@@ -32,7 +32,7 @@ public class PedidoRepositoryImpl implements PedidoRepository {
             throw new IllegalArgumentException("El pedido no puede ser null");
         }
 
-        String sql = "INSERT INTO pedido (id_cliente, fecha, total) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO pedidos (id_cliente, fecha, total) VALUES (?, ?, ?)";
 
         try (Connection conn = ConexionBD.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -80,7 +80,7 @@ public class PedidoRepositoryImpl implements PedidoRepository {
     
     @Override
     public Optional<Pedido> findById(Integer id) {
-        String sql = "SELECT id, id_cliente, fecha, total FROM pedido WHERE id = ?";
+        String sql = "SELECT id, id_cliente, fecha, total FROM pedidos WHERE id = ?";
         
         try (Connection conn = ConexionBD.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -102,7 +102,7 @@ public class PedidoRepositoryImpl implements PedidoRepository {
     
     @Override
     public List<Pedido> findAll() {
-        String sql = "SELECT id, id_cliente, fecha, total FROM pedido ORDER BY fecha DESC";
+        String sql = "SELECT id, id_cliente, fecha, total FROM pedidos ORDER BY fecha DESC";
         List<Pedido> pedidos = new ArrayList<>();
 
         try (Connection conn = ConexionBD.getInstance().getConnection();
@@ -141,7 +141,7 @@ public class PedidoRepositoryImpl implements PedidoRepository {
             return new ArrayList<>();
         }
 
-        String sql = "SELECT id, id_cliente, fecha, total FROM pedido WHERE id_cliente = ? ORDER BY fecha DESC";
+        String sql = "SELECT id, id_cliente, fecha, total FROM pedidos WHERE id_cliente = ? ORDER BY fecha DESC";
         List<Pedido> pedidos = new ArrayList<>();
 
         try (Connection conn = ConexionBD.getInstance().getConnection();
@@ -186,7 +186,7 @@ public class PedidoRepositoryImpl implements PedidoRepository {
             throw new PedidoNotFoundException(pedido.getId());
         }
         
-        String sql = "UPDATE pedido SET id_cliente = ?, fecha = ?, total = ? WHERE id = ?";
+        String sql = "UPDATE pedidos SET id_cliente = ?, fecha = ?, total = ? WHERE id = ?";
         
         try (Connection conn = ConexionBD.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -212,7 +212,7 @@ public class PedidoRepositoryImpl implements PedidoRepository {
             throw new PedidoNotFoundException(id);
         }
         
-        String sql = "DELETE FROM pedido WHERE id = ?";
+        String sql = "DELETE FROM pedidos WHERE id = ?";
         
         try (Connection conn = ConexionBD.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -237,7 +237,7 @@ public class PedidoRepositoryImpl implements PedidoRepository {
             return 0;
         }
 
-        String sql = "SELECT COUNT(*) FROM pedido WHERE id_cliente = ?";
+        String sql = "SELECT COUNT(*) FROM pedidos WHERE id_cliente = ?";
 
         try (Connection conn = ConexionBD.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -271,7 +271,7 @@ public class PedidoRepositoryImpl implements PedidoRepository {
             return 0.0;
         }
 
-        String sql = "SELECT COALESCE(SUM(total), 0) FROM pedido WHERE id_cliente = ?";
+        String sql = "SELECT COALESCE(SUM(total), 0) FROM pedidos WHERE id_cliente = ?";
 
         try (Connection conn = ConexionBD.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

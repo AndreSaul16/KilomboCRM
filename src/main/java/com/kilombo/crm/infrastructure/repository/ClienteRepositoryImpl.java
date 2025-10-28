@@ -32,7 +32,7 @@ public class ClienteRepositoryImpl implements ClienteRepository {
             throw new IllegalArgumentException("El cliente no puede ser null");
         }
 
-        String sql = "INSERT INTO cliente (nombre, apellido, email, telefono) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO clientes (nombre, apellido, email, telefono) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = ConexionBD.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -85,7 +85,7 @@ public class ClienteRepositoryImpl implements ClienteRepository {
             return Optional.empty();
         }
 
-        String sql = "SELECT id, nombre, apellido, email, telefono FROM cliente WHERE id = ?";
+        String sql = "SELECT id, nombre, apellido, email, telefono FROM clientes WHERE id = ?";
 
         try (Connection conn = ConexionBD.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -118,7 +118,7 @@ public class ClienteRepositoryImpl implements ClienteRepository {
     
     @Override
     public List<Cliente> findAll() {
-        String sql = "SELECT id, nombre, apellido, email, telefono FROM cliente ORDER BY apellido, nombre";
+        String sql = "SELECT id, nombre, apellido, email, telefono FROM clientes ORDER BY apellido, nombre";
         List<Cliente> clientes = new ArrayList<>();
 
         try (Connection conn = ConexionBD.getInstance().getConnection();
@@ -161,7 +161,7 @@ public class ClienteRepositoryImpl implements ClienteRepository {
             throw new ClienteNotFoundException(cliente.getId());
         }
         
-        String sql = "UPDATE cliente SET nombre = ?, apellido = ?, email = ?, telefono = ? WHERE id = ?";
+        String sql = "UPDATE clientes SET nombre = ?, apellido = ?, email = ?, telefono = ? WHERE id = ?";
         
         try (Connection conn = ConexionBD.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -187,7 +187,7 @@ public class ClienteRepositoryImpl implements ClienteRepository {
             throw new ClienteNotFoundException(id);
         }
         
-        String sql = "DELETE FROM cliente WHERE id = ?";
+        String sql = "DELETE FROM clientes WHERE id = ?";
         
         try (Connection conn = ConexionBD.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -212,7 +212,7 @@ public class ClienteRepositoryImpl implements ClienteRepository {
             return false;
         }
 
-        String sql = "SELECT COUNT(*) FROM cliente WHERE email = ?";
+        String sql = "SELECT COUNT(*) FROM clientes WHERE email = ?";
 
         try (Connection conn = ConexionBD.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -251,7 +251,7 @@ public class ClienteRepositoryImpl implements ClienteRepository {
             return false;
         }
 
-        String sql = "SELECT COUNT(*) FROM cliente WHERE email = ? AND id != ?";
+        String sql = "SELECT COUNT(*) FROM clientes WHERE email = ? AND id != ?";
 
         try (Connection conn = ConexionBD.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
