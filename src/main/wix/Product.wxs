@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Product Id="*" Name="KilomboCRM" Language="1033" Version="1.0.0.0" Manufacturer="Kilombo Team" UpgradeCode="PUT-GUID-HERE">
+        <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+        <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+        <MediaTemplate />
+
+        <Feature Id="ProductFeature" Title="KilomboCRM" Level="1">
+            <ComponentGroupRef Id="ProductComponents" />
+        </Feature>
+    </Product>
+
+    <Fragment>
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="ProgramFilesFolder">
+                <Directory Id="INSTALLFOLDER" Name="KilomboCRM" />
+            </Directory>
+        </Directory>
+    </Fragment>
+
+    <Fragment>
+        <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+            <!-- Application JAR -->
+            <Component Id="MainApplication" Guid="PUT-GUID-HERE">
+                <File Id="KilomboCRM.jar" Source="target/KilomboCRM-1.0.0-jar-with-dependencies.jar" KeyPath="yes" />
+            </Component>
+
+            <!-- Desktop Shortcut -->
+            <Component Id="DesktopShortcut" Guid="PUT-GUID-HERE">
+                <Shortcut Id="DesktopShortcut"
+                         Directory="DesktopFolder"
+                         Name="KilomboCRM"
+                         WorkingDirectory="INSTALLFOLDER"
+                         Icon="AppIcon.ico"
+                         Target="[INSTALLFOLDER]KilomboCRM.bat" />
+                <RegistryValue Root="HKCU" Key="Software\KilomboCRM" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+            </Component>
+
+            <!-- Start Menu Shortcut -->
+            <Component Id="StartMenuShortcut" Guid="PUT-GUID-HERE">
+                <Shortcut Id="StartMenuShortcut"
+                         Directory="ProgramMenuFolder"
+                         Name="KilomboCRM"
+                         WorkingDirectory="INSTALLFOLDER"
+                         Icon="AppIcon.ico"
+                         Target="[INSTALLFOLDER]KilomboCRM.bat" />
+            </Component>
+        </ComponentGroup>
+    </Fragment>
+
+    <!-- UI Customization -->
+    <Fragment>
+        <UI>
+            <UIRef Id="WixUI_InstallDir" />
+            <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="InstallDirDlg" Order="2">1</Publish>
+            <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="2">1</Publish>
+        </UI>
+    </Fragment>
+</Wix>

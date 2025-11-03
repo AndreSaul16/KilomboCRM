@@ -4,8 +4,24 @@
 
 **¿Quieres usar KilomboCRM? ¡Es muy fácil!**
 
-### 📋 Lo Único que Necesitas
+### 📋 Opción 1: Instalador Automático (Más Fácil)
 
+1. **Descarga el instalador**
+   - `KilomboCRM-Installer.msi` (Windows)
+   - Archivo único que instala todo automáticamente
+
+2. **Ejecuta el instalador**
+   - Doble clic en `KilomboCRM-Installer.msi`
+   - El instalador detectará y ofrecerá instalar Java y MySQL si no los tienes
+   - Sigue las instrucciones en pantalla
+
+3. **¡Listo! La aplicación se instala automáticamente**
+   - Acceso directo en escritorio y menú inicio
+   - Todo configurado y listo para usar
+
+### 📋 Opción 2: Instalación Manual (Si prefieres control total)
+
+#### Lo Único que Necesitas
 1. **Java 17+ instalado** (gratuito)
    - Descargar desde: https://adoptium.net/
    - Verificar instalación: `java -version`
@@ -14,8 +30,7 @@
    - Solo si quieres guardar datos reales
    - Se configura después desde la aplicación
 
-### ▶️ Ejecutar la Aplicación (¡SOLO ESTE PASO!)
-
+#### Ejecutar la Aplicación
 1. **Descarga el archivo JAR**
    - `KilomboCRM-1.0.0-jar-with-dependencies.jar`
 
@@ -220,7 +235,19 @@ java -jar target/KilomboCRM-1.0.0-jar-with-dependencies.jar
 
 ### 🎯 Resumen Ejecutivo
 
+#### Para Distribución Fácil:
+- **Instalador recomendado**: `KilomboCRM-Installer.msi`
+- **Instala automáticamente**: Java, MySQL y la aplicación
+- **Usuario final**: Solo ejecuta el MSI y listo
+
+#### Para Distribución Avanzada:
 - **Archivo principal**: `KilomboCRM-1.0.0-jar-with-dependencies.jar`
 - **Ejecución**: Doble clic o `java -jar archivo.jar`
 - **Configuración**: Opcional, desde la interfaz de usuario
 - **Requisitos**: Solo Java 17+ y MySQL/MariaDB (opcional inicialmente)
+
+### 📦 Archivos para Distribución
+
+1. **Para usuarios principiantes**: `KilomboCRM-Installer.msi`
+2. **Para usuarios avanzados**: `KilomboCRM-1.0.0-jar-with-dependencies.jar`
+3. **Para desarrollo**: Código fuente completo + `KilomboCRM.bat`
