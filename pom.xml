@@ -149,30 +149,6 @@
                 </configuration>
             </plugin>
 
-            <!-- WiX Toolset Maven Plugin para crear instalador MSI con Java y MySQL -->
-            <plugin>
-                <groupId>com.github.wixtoolset</groupId>
-                <artifactId>wix-maven-plugin</artifactId>
-                <version>1.0.5</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <cultures>
-                        <culture>en-US</culture>
-                    </cultures>
-                    <arch>64</arch>
-                    <sourceFiles>
-                        <sourceFile>src/main/wix/Product.wxs</sourceFile>
-                    </sourceFiles>
-                    <outputFile>${project.build.directory}/KilomboCRM-Installer.msi</outputFile>
-                </configuration>
-            </plugin>
 
         </plugins>
     </build>
