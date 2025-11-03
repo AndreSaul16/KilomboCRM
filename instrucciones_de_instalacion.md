@@ -4,7 +4,33 @@
 
 **¿Quieres usar KilomboCRM? ¡Es muy fácil!**
 
-### 📋 Opción 1: JAR Ejecutable (Más Sencillo)
+### 📋 Opción 1: Instalador EXE Completo (Recomendado)
+
+**¡Instalador profesional listo!** Archivo: `KilomboCRM-Installer.exe`
+
+1. **Descarga el instalador**
+   - `KilomboCRM-Installer.exe` (4.2 MB)
+   - Ubicación: `target/KilomboCRM-Installer.exe`
+
+2. **Ejecuta el instalador**
+   - Doble clic en `KilomboCRM-Installer.exe`
+   - El instalador detectará automáticamente si necesitas Java y MySQL
+   - Si no están instalados, te preguntará si quieres instalarlos
+
+3. **¡Instalación completa automática!**
+   - ✅ Instala la aplicación completa
+   - ✅ Crea accesos directos en escritorio y menú inicio
+   - ✅ Registra en programas instalados
+   - ✅ Incluye desinstalador completo
+
+4. **Características del instalador:**
+   - Detecta Java automáticamente
+   - Ofrece instalar MySQL si no existe
+   - Instalación guiada paso a paso
+   - Desinstalador incluido
+   - Compatible con Windows 10/11
+
+### 📋 Opción 2: JAR Ejecutable (Avanzado)
 
 1. **Descarga el JAR ejecutable**
    - `KilomboCRM-1.0.0-jar-with-dependencies.jar`
@@ -18,32 +44,6 @@
    - ✅ Sin instalación compleja
    - ✅ Funciona sin base de datos inicialmente
    - ✅ Configuración opcional posterior
-
-### 📋 Opción 2: Instalador EXE Completo (¡Ya disponible!)
-
-**¡El instalador MSI está listo!** Archivo: `KilomboCRM-Installer.exe`
-
-1. **Descarga el instalador**
-   - `KilomboCRM-Installer.exe` (4.2 MB)
-   - Ubicación: `target/KilomboCRM-Installer.exe`
-
-2. **Ejecuta el instalador**
-   - Doble clic en `KilomboCRM-Installer.exe`
-   - El instalador detectará automáticamente si necesitas Java y MySQL
-   - Si no están instalados, te preguntará si quieres instalarlos
-
-3. **¡Instalación completa automática!**
-   - ✅ Instala la aplicación
-   - ✅ Crea accesos directos en escritorio y menú inicio
-   - ✅ Registra en programas instalados
-   - ✅ Incluye desinstalador
-
-4. **Características del instalador:**
-   - Detecta Java automáticamente
-   - Ofrece instalar MySQL si no existe
-   - Instalación silenciosa opcional
-   - Desinstalador completo incluido
-   - Compatible con Windows 10/11
 
 ### 📋 Opción 2: Instalación Manual (Si prefieres control total)
 
@@ -276,4 +276,4 @@ java -jar target/KilomboCRM-1.0.0-jar-with-dependencies.jar
 
 1. **Para usuarios finales (recomendado)**: `KilomboCRM-Installer.exe` ⭐
 2. **Para usuarios avanzados**: `KilomboCRM-1.0.0-jar-with-dependencies.jar`
-3. **Para desarrollo**: Código fuente completo + `KilomboCRM.bat`
+3. **Para desarrollo**: Código fuente completo
