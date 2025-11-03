@@ -52,14 +52,14 @@ public class MainFrame extends JFrame implements NavigationPanel.NavigationListe
     public MainFrame() {
         initServices();
         initComponents();
-        
+
         setTitle("KilomboCRM - Sistema de Gestión de Clientes y Pedidos");
         setSize(1000, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        
-        // Verificar conexión a la base de datos al iniciar
-        verificarConexion();
+
+        // No verificar conexión automáticamente al iniciar - permitir funcionamiento sin BBDD
+        // verificarConexion();
     }
     
     /**
