@@ -4,12 +4,14 @@ MEMORIA TÉCNICA - PROYECTO KILOMBOCRM
 INFORMACIÓN DEL PROYECTO
 ------------------------
 - Nombre: KilomboCRM
-- Versión: 1.0.0
+- Versión: 1.0.0 BETA
 - Fecha: Diciembre 2024
 - Lenguaje: Java 17
 - Framework: Swing (GUI), JDBC (BD)
 - Base de Datos: MySQL 8.0+
 - Arquitectura: Clean Architecture
+- Instalador: NSIS (Nullsoft Scriptable Install System)
+- Empaquetado: Maven Assembly Plugin + Launch4j
 
 OBJETIVOS DEL PROYECTO
 ----------------------
@@ -66,9 +68,11 @@ TECNOLOGÍAS UTILIZADAS
 ----------------------
 - Java 17 (OpenJDK)
 - MySQL Connector/J 8.0.33
-- Maven 3.8+ (gestión de dependencias)
+- Maven 3.8+ (gestión de dependencias y build)
 - Java Swing (interfaz gráfica)
 - JDBC (conectividad BD)
+- NSIS (Nullsoft Scriptable Install System) - Instaladores EXE
+- Launch4j - Conversión JAR a EXE
 - JUnit 5 (testing - preparado)
 - Mockito (mocks - preparado)
 
@@ -149,19 +153,61 @@ CALIDAD DEL CÓDIGO
 
 COMPILACIÓN Y EJECUCIÓN
 -----------------------
+El proyecto ofrece múltiples formas de ejecución según el perfil del usuario:
+
+FORMA 1: INSTALADOR EXE COMPLETO (RECOMENDADO PARA USUARIOS FINALES)
+-------------------------------------------------------------------
+1. Requisitos: Windows 10/11 (instalador incluye Java y MySQL)
+2. Archivo: KilomboCRM-Installer.exe (4.2 MB)
+3. Ejecución: Doble clic en el instalador
+4. Características:
+   - Instalación completamente offline
+   - Detecta software existente (Java/MySQL)
+   - Instala automáticamente si no están presentes
+   - Crea accesos directos y registra en Windows
+   - Incluye desinstalador completo
+5. Ventajas: Experiencia "plug & play", sin conocimientos técnicos requeridos
+
+FORMA 2: EJECUCIÓN COMO USUARIO FINAL (JAR PORTABLE)
+--------------------------------------------------
+1. Requisitos: Java 17+ instalado
+2. Archivo: KilomboCRM-1.0.0-jar-with-dependencies.jar
+3. Ejecución: java -jar KilomboCRM-1.0.0-jar-with-dependencies.jar
+4. Ventajas: No requiere compilar, portable, todas las dependencias incluidas
+5. Configuración BD: Desde la interfaz de la aplicación (panel Configuración)
+
+FORMA 3: EJECUCIÓN DESDE CÓDIGO FUENTE (DESARROLLADORES)
+-------------------------------------------------------
 1. Requisitos: Java 17, MySQL 8.0+, Maven 3.6+
-2. Configuración: application.properties
+2. Configuración: application.properties (credenciales BD)
 3. Compilación: mvn clean compile
 4. Ejecución: mvn exec:java -Dexec.mainClass="com.kilombo.crm.presentation.MainFrame"
-5. JAR ejecutable: mvn package (genera JAR con dependencias)
+5. Ventajas: Código fuente disponible, personalizable
+
+FORMA 4: JAR GENERADO DESDE FUENTE (EQUIPOS DE DESARROLLO)
+---------------------------------------------------------
+1. Requisitos: Java 17, MySQL 8.0+, Maven 3.6+
+2. Generación: mvn clean package
+3. Archivo generado: target/KilomboCRM-1.0.0-jar-with-dependencies.jar
+4. Ejecución: java -jar target/KilomboCRM-1.0.0-jar-with-dependencies.jar
+5. Ventajas: Combina lo mejor de ambos mundos
 
 ARCHIVOS DE ENTREGA
 -------------------
 - Código fuente completo (src/)
 - Scripts SQL (schema.sql, data.sql)
-- Documentación (README.md, ARQUITECTURA.md, instrucciones_de_instalacion.md)
-- JAR ejecutable (target/KilomboCRM-1.0.0-jar-with-dependencies.jar)
-- Memoria técnica (este archivo)
+- Scripts NSIS para instalador (src/main/nsis/)
+- Documentación completa:
+  * README.md - Documentación general
+  * ARQUITECTURA.md - Detalles técnicos de arquitectura
+  * instrucciones_de_instalacion.md - Guía detallada de instalación y ejecución
+  * memoria_tecnica.txt - Esta documentación técnica
+- Instalador EXE completo (KilomboCRM-Installer.exe) - RECOMENDADO
+- JAR ejecutable portable (KilomboCRM-1.0.0-jar-with-dependencies.jar)
+- Instaladores offline incluidos:
+  * JDK 25 (jdk-25_windows-x64_bin.exe)
+  * MySQL 8.0.44 (mysql-installer-community-8.0.44.0.msi)
+- Repositorio Git con rama beta1.0 (https://github.com/AndreSaul16/KilomboCRM/tree/beta1.0)
 
 CUMPLIMIENTO DE REQUISITOS
 --------------------------
@@ -178,6 +224,33 @@ CUMPLIMIENTO DE REQUISITOS
 
 CONCLUSIONES
 ------------
-El proyecto KilomboCRM cumple con todos los requisitos mínimos solicitados y supera ampliamente las expectativas con funcionalidades avanzadas. La arquitectura limpia garantiza mantenibilidad y escalabilidad futura. El único problema conocido es el servicio de email, que no afecta la funcionalidad principal del sistema.
+El proyecto KilomboCRM cumple con todos los requisitos mínimos solicitados y SUPERA AMPLIAMENTE las expectativas con funcionalidades avanzadas implementadas. La arquitectura limpia (Clean Architecture) garantiza mantenibilidad y escalabilidad futura.
 
-El código está bien estructurado, documentado y preparado para futuras mejoras. La interfaz gráfica es intuitiva y funcional, proporcionando una experiencia de usuario satisfactoria para la gestión de clientes y pedidos.
+CARACTERÍSTICAS TÉCNICAS DESTACADAS IMPLEMENTADAS:
+- ✅ Instalador EXE profesional con NSIS (Nullsoft Scriptable Install System)
+- ✅ Instalación completamente offline con JDK 25 y MySQL 8.0.44 incluidos
+- ✅ Detección inteligente de software preinstalado
+- ✅ Empaquetado avanzado con Maven Assembly Plugin y Launch4j
+- ✅ Compatibilidad completa con Windows 10/11
+- ✅ Experiencia "plug & play" para usuarios finales
+- ✅ Múltiples opciones de distribución según perfil de usuario
+
+CARACTERÍSTICAS DESTACADAS DE LA VERSIÓN BETA 1.0:
+- ✅ INSTALADOR EXE PROFESIONAL COMPLETO (4.2 MB) - RECOMENDADO
+- ✅ Instalación completamente OFFLINE (incluye JDK 25 y MySQL 8.0.44)
+- ✅ Detección inteligente de software existente
+- ✅ Aplicación completamente portable (JAR ejecutable)
+- ✅ Inicio sin configuración de base de datos previa
+- ✅ Configuración dinámica de BD desde interfaz gráfica
+- ✅ Múltiples opciones de ejecución según perfil de usuario
+- ✅ Arquitectura Clean Architecture bien implementada
+- ✅ Documentación completa y detallada
+- ✅ Repositorio Git organizado con control de versiones
+- ✅ Compatible con Windows 10/11
+
+PROBLEMAS CONOCIDOS Y LIMITACIONES:
+- Servicio de email: NO FUNCIONAL (configuración SMTP pendiente)
+- Tests unitarios: NO IMPLEMENTADOS (0% cobertura)
+- Algunos code smells menores (duplicación try-catch, clase MainFrame extensa)
+
+El código está bien estructurado, documentado y preparado para futuras mejoras. La interfaz gráfica es intuitiva y funcional, proporcionando una experiencia de usuario satisfactoria para la gestión de clientes y pedidos. La aplicación es completamente funcional para su propósito principal y lista para distribución a usuarios finales.

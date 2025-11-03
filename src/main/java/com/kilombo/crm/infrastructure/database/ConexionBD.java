@@ -33,7 +33,7 @@ public class ConexionBD {
     private String url;
     private String username;
     private String password;
-    private final String driver;
+    private String driver;
 
     // Configuración de reintentos y timeouts
     private static final int MAX_RETRIES = 3;
@@ -125,28 +125,52 @@ public class ConexionBD {
     /**
      * Obtiene la instancia única de ConexionBD (Singleton).
      * Implementa doble verificación para thread-safety.
-     * 
+     * La instancia se crea de forma lazy para permitir funcionamiento sin BBDD.
+     *
      * @return Instancia única de ConexionBD
      */
     public static ConexionBD getInstance() {
         if (instance == null) {
             synchronized (ConexionBD.class) {
                 if (instance == null) {
-                    instance = new ConexionBD();
+                    try {
+                        instance = new ConexionBD();
+                    } catch (Exception e) {
+                        logger.warning("No se pudo inicializar la conexión a BD. La aplicación funcionará en modo sin conexión: " + e.getMessage());
+                        // Crear instancia sin inicializar completamente para permitir funcionamiento sin BD
+                        instance = new ConexionBD(true);
+                    }
                 }
             }
         }
         return instance;
     }
+
+    /**
+     * Constructor privado alternativo para funcionamiento sin BD.
+     * Solo se usa cuando falla la inicialización normal.
+     */
+    private ConexionBD(boolean offlineMode) {
+        this.properties = new Properties();
+        this.configManager = ConfigurationManager.getInstance();
+        this.driver = null; // No hay driver en modo offline
+        // No cargar propiedades ni driver en modo offline
+    }
     
     /**
      * Obtiene una conexión activa a la base de datos con reintentos automáticos.
      * Si la conexión está cerrada o es nula, crea una nueva con validación.
+     * En modo offline, lanza excepción indicando que no hay BD configurada.
      *
      * @return Conexión activa a la base de datos
-     * @throws DatabaseException si no se puede establecer la conexión después de reintentos
+     * @throws DatabaseException si no se puede establecer la conexión después de reintentos o si está en modo offline
      */
     public Connection getConnection() {
+        // Verificar si estamos en modo offline
+        if (driver == null) {
+            throw new DatabaseException("La aplicación está funcionando en modo sin conexión. Configure una base de datos en el panel de configuración.");
+        }
+
         for (int attempt = 1; attempt <= MAX_RETRIES; attempt++) {
             try {
                 if (connection == null || connection.isClosed() || !isConnectionValid()) {
@@ -215,10 +239,16 @@ public class ConexionBD {
     
     /**
      * Verifica si la conexión está activa y funcional.
+     * En modo offline siempre retorna false.
      *
      * @return true si la conexión está activa, false en caso contrario
      */
     public boolean isConnected() {
+        // En modo offline, nunca está conectado
+        if (driver == null) {
+            return false;
+        }
+
         try {
             return connection != null && !connection.isClosed() && isConnectionValid();
         } catch (SQLException e) {
@@ -333,10 +363,15 @@ public class ConexionBD {
     
     /**
      * Prueba la conexión a la base de datos con validación completa.
+     * En modo offline siempre retorna false.
      *
      * @return true si la conexión es exitosa y la BD está operativa, false en caso contrario
      */
     public boolean testConnection() {
+        // En modo offline, la prueba siempre falla
+        if (driver == null) {
+            return false;
+        }
         return testConnection(false);
     }
 
@@ -484,10 +519,17 @@ public class ConexionBD {
     
     /**
      * Obtiene información de la configuración de la base de datos.
-     * 
+     * En modo offline muestra información limitada.
+     *
      * @return String con información de la configuración (sin password)
      */
     public String getConnectionInfo() {
+        if (driver == null) {
+            return "Modo: Sin conexión\n" +
+                   "Estado: Aplicación funcionando sin base de datos\n" +
+                   "Configure una base de datos en el panel de configuración.";
+        }
+
         return "URL: " + url + "\n" +
                "Usuario: " + username + "\n" +
                "Driver: " + driver + "\n" +
