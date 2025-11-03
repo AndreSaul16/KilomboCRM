@@ -7,6 +7,7 @@ import com.kilombo.crm.presentation.dialog.ClienteDialog;
 import com.kilombo.crm.presentation.table.ClienteTableModel;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
@@ -79,40 +80,54 @@ public class ClientePanel extends JPanel {
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setRowHeight(25);
         table.getTableHeader().setReorderingAllowed(false);
-        
-        // Configurar anchos de columnas
+
+        // Configurar renderers para centrar texto
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+
+        // Configurar anchos de columnas y renderers
         table.getColumnModel().getColumn(0).setPreferredWidth(50);  // ID
+        table.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
         table.getColumnModel().getColumn(1).setPreferredWidth(150); // Nombre
+        table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
         table.getColumnModel().getColumn(2).setPreferredWidth(150); // Apellido
+        table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
         table.getColumnModel().getColumn(3).setPreferredWidth(200); // Email
+        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
         table.getColumnModel().getColumn(4).setPreferredWidth(120); // Teléfono
+        table.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
         
         JScrollPane scrollPane = new JScrollPane(table);
         add(scrollPane, BorderLayout.CENTER);
         
         // Panel de botones
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
         
         btnAnadir = new JButton("Añadir");
+        btnAnadir.setFont(new Font("Arial", Font.PLAIN, 12));
         btnAnadir.setIcon(UIManager.getIcon("FileView.fileIcon"));
         btnAnadir.addActionListener(e -> anadirCliente());
-        
+
         btnModificar = new JButton("Modificar");
+        btnModificar.setFont(new Font("Arial", Font.PLAIN, 12));
         btnModificar.addActionListener(e -> modificarCliente());
         btnModificar.setEnabled(false);
-        
+
         btnEliminar = new JButton("Eliminar");
+        btnEliminar.setFont(new Font("Arial", Font.PLAIN, 12));
         btnEliminar.addActionListener(e -> eliminarCliente());
         btnEliminar.setEnabled(false);
-        
+
         btnActualizar = new JButton("Actualizar");
+        btnActualizar.setFont(new Font("Arial", Font.PLAIN, 12));
         btnActualizar.addActionListener(e -> {
             if (!isLoading) {
                 cargarClientesAsync();
             }
         });
-        
+
         btnVerPedidos = new JButton("Ver Pedidos");
+        btnVerPedidos.setFont(new Font("Arial", Font.PLAIN, 12));
         btnVerPedidos.addActionListener(e -> verPedidos());
         btnVerPedidos.setEnabled(false);
         

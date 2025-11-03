@@ -1,5 +1,6 @@
 package com.kilombo.crm.infrastructure.repository;
 
+import com.kilombo.crm.application.dto.InformeBI_DTO;
 import com.kilombo.crm.domain.exception.DatabaseException;
 import com.kilombo.crm.domain.exception.PedidoNotFoundException;
 import com.kilombo.crm.domain.model.Pedido;
@@ -295,6 +296,51 @@ public class PedidoRepositoryImpl implements PedidoRepository {
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error inesperado al calcular total gastado por el cliente " + idCliente + ": " + e.getMessage(), e);
             throw new DatabaseException("Error inesperado al calcular total gastado por el cliente: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public List<InformeBI_DTO> findTopClientsByGrossProfit(int limit) {
+        if (limit <= 0) {
+            logger.warning("Límite inválido para consulta de top clientes: " + limit);
+            return new ArrayList<>();
+        }
+
+        String sql = "SELECT c.nombre, c.apellido, SUM(dp.ganancia_bruta) AS GananciaTotal " +
+                     "FROM clientes c JOIN pedidos p ON c.id = p.id_cliente " +
+                     "JOIN detalles_pedido dp ON p.id = dp.id_pedido " +
+                     "WHERE p.estado = 'COMPLETADO' " +
+                     "GROUP BY c.id ORDER BY GananciaTotal DESC LIMIT ?";
+
+        List<InformeBI_DTO> informes = new ArrayList<>();
+
+        try (Connection conn = ConexionBD.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, limit);
+            logger.fine("Ejecutando consulta BI para top " + limit + " clientes por ganancia bruta");
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                int count = 0;
+                while (rs.next()) {
+                    String nombreCliente = rs.getString("nombre") + " " + rs.getString("apellido");
+                    double gananciaTotal = rs.getDouble("GananciaTotal");
+
+                    InformeBI_DTO informe = new InformeBI_DTO(nombreCliente, gananciaTotal);
+                    informes.add(informe);
+                    count++;
+                }
+                logger.fine("Se encontraron " + count + " clientes top por ganancia bruta");
+            }
+
+            return informes;
+
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error SQL al generar informe BI: " + e.getMessage(), e);
+            throw new DatabaseException("Error al generar informe BI: " + e.getMessage(), e);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error inesperado al generar informe BI: " + e.getMessage(), e);
+            throw new DatabaseException("Error inesperado al generar informe BI: " + e.getMessage(), e);
         }
     }
 }

@@ -21,7 +21,8 @@ public class PedidoDTO {
     private Integer idCliente;
     private LocalDate fecha;
     private Double total;
-    
+    private String estado;
+
     // Campos adicionales para la UI
     private String nombreCliente;
     
@@ -48,7 +49,7 @@ public class PedidoDTO {
     
     /**
      * Crea un DTO desde una entidad de dominio.
-     * 
+     *
      * @param pedido Entidad Pedido
      * @return PedidoDTO con los datos del pedido
      */
@@ -56,12 +57,14 @@ public class PedidoDTO {
         if (pedido == null) {
             return null;
         }
-        return new PedidoDTO(
+        PedidoDTO dto = new PedidoDTO(
             pedido.getId(),
             pedido.getIdCliente(),
             pedido.getFecha(),
             pedido.getTotal()
         );
+        dto.setEstado(pedido.getEstado());
+        return dto;
     }
     
     /**
@@ -136,6 +139,14 @@ public class PedidoDTO {
     
     public void setNombreCliente(String nombreCliente) {
         this.nombreCliente = nombreCliente;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
     
     // equals, hashCode y toString

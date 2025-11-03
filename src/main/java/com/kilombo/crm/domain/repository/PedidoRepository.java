@@ -1,6 +1,7 @@
 package com.kilombo.crm.domain.repository;
 
 import com.kilombo.crm.domain.model.Pedido;
+import com.kilombo.crm.application.dto.InformeBI_DTO;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,10 +82,19 @@ public interface PedidoRepository {
     
     /**
      * Calcula el total gastado por un cliente.
-     * 
+     *
      * @param idCliente ID del cliente
      * @return Total gastado por el cliente
      * @throws com.kilombo.crm.domain.exception.DatabaseException si ocurre un error en la BD
      */
     double sumTotalByClienteId(Integer idCliente);
+
+    /**
+     * Obtiene los clientes top por ganancia bruta.
+     *
+     * @param limit Número máximo de clientes a retornar
+     * @return Lista de InformeBI_DTO con los clientes top
+     * @throws com.kilombo.crm.domain.exception.DatabaseException si ocurre un error en la BD
+     */
+    List<InformeBI_DTO> findTopClientsByGrossProfit(int limit);
 }

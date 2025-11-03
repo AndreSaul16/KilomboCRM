@@ -27,11 +27,12 @@ public class ConexionBD {
     private static ConexionBD instance;
     private Connection connection;
     private final Properties properties;
+    private final ConfigurationManager configManager;
 
     // Configuración de la base de datos
-    private final String url;
-    private final String username;
-    private final String password;
+    private String url;
+    private String username;
+    private String password;
     private final String driver;
 
     // Configuración de reintentos y timeouts
@@ -42,39 +43,40 @@ public class ConexionBD {
     
     /**
      * Constructor privado para implementar el patrón Singleton.
-     * Carga la configuración desde application.properties.
-     * 
+     * Carga la configuración desde application.properties y ConfigurationManager.
+     *
      * @throws DatabaseException si no se puede cargar la configuración o el driver
      */
     private ConexionBD() {
         properties = new Properties();
+        configManager = ConfigurationManager.getInstance();
         loadProperties();
-        
-        this.url = properties.getProperty("db.url");
-        this.username = properties.getProperty("db.username");
-        this.password = properties.getProperty("db.password");
+
+        // Usar configuración dinámica del ConfigurationManager
+        updateConfigurationFromManager();
+
         this.driver = properties.getProperty("db.driver");
-        
+
         loadDriver();
     }
     
     /**
      * Carga las propiedades de configuración desde el archivo application.properties.
-     * 
+     *
      * @throws DatabaseException si no se puede cargar el archivo de propiedades
      */
     private void loadProperties() {
         try (InputStream input = getClass().getClassLoader()
                 .getResourceAsStream("application.properties")) {
-            
+
             if (input == null) {
                 throw new DatabaseException(
                     "No se pudo encontrar el archivo application.properties"
                 );
             }
-            
+
             properties.load(input);
-            
+
         } catch (IOException e) {
             throw new DatabaseException(
                 "Error al cargar el archivo de configuración", e
@@ -95,6 +97,29 @@ public class ConexionBD {
                 "No se pudo cargar el driver de MySQL: " + driver, e
             );
         }
+    }
+
+    /**
+     * Actualiza la configuración desde el ConfigurationManager.
+     * Permite cambiar dinámicamente la configuración de conexión.
+     */
+    private void updateConfigurationFromManager() {
+        this.url = configManager.getConnectionUrl();
+        this.username = configManager.getUsername();
+        this.password = configManager.getPassword();
+    }
+
+    /**
+     * Actualiza la configuración y reinicia la conexión si es necesario.
+     * Se llama cuando se cambian los parámetros de configuración desde la UI.
+     */
+    public void refreshConfiguration() {
+        updateConfigurationFromManager();
+
+        // Cerrar conexión existente para forzar reconexión con nueva configuración
+        closeConnection();
+
+        logger.info("Configuración actualizada: " + configManager.getConfigurationInfo());
     }
     
     /**
@@ -312,6 +337,20 @@ public class ConexionBD {
      * @return true si la conexión es exitosa y la BD está operativa, false en caso contrario
      */
     public boolean testConnection() {
+        return testConnection(false);
+    }
+
+    /**
+     * Prueba la conexión a la base de datos con validación completa.
+     *
+     * @param forceNewConnection true para forzar una nueva conexión con configuración actualizada
+     * @return true si la conexión es exitosa y la BD está operativa, false en caso contrario
+     */
+    public boolean testConnection(boolean forceNewConnection) {
+        if (forceNewConnection) {
+            closeConnection();
+        }
+
         try {
             Connection testConn = getConnection();
             if (testConn == null || testConn.isClosed()) {
@@ -340,6 +379,106 @@ public class ConexionBD {
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error inesperado en prueba de conexión: " + e.getMessage(), e);
             return false;
+        }
+    }
+
+    /**
+     * Prueba la conexión con configuración específica y devuelve mensaje de error detallado.
+     *
+     * @param testHost Host/IP a probar
+     * @param testUsername Usuario a probar
+     * @param testPassword Contraseña a probar
+     * @return Resultado de la prueba con mensaje de error si falla
+     */
+    public ConnectionTestResult testConnectionWithConfig(String testHost, String testUsername, String testPassword) {
+        ConnectionTestResult result = new ConnectionTestResult();
+
+        try {
+            // Crear URL de prueba
+            String testUrl = "jdbc:mysql://" + testHost + ":3306/" + configManager.getDatabase() +
+                           "?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8";
+
+            logger.info("Probando conexión con configuración: Host=" + testHost + ", Usuario=" + testUsername);
+
+            // Intentar conexión con timeout reducido para pruebas
+            DriverManager.setLoginTimeout(5); // 5 segundos timeout
+            Connection testConn = DriverManager.getConnection(testUrl, testUsername, testPassword);
+
+            if (testConn != null && !testConn.isClosed()) {
+                // Verificar que podemos hacer consultas
+                try (Statement stmt = testConn.createStatement()) {
+                    stmt.setQueryTimeout(5);
+                    stmt.executeQuery("SELECT 1").close();
+
+                    result.setSuccess(true);
+                    result.setMessage("Conexión exitosa a la base de datos");
+                    logger.info("Prueba de conexión exitosa con configuración personalizada");
+
+                } finally {
+                    testConn.close();
+                }
+            }
+
+        } catch (SQLException e) {
+            result.setSuccess(false);
+            result.setErrorType(getErrorType(e));
+            result.setMessage(getDetailedErrorMessage(e, testHost, testUsername));
+            logger.log(Level.WARNING, "Error en prueba de conexión: " + e.getMessage(), e);
+        } catch (Exception e) {
+            result.setSuccess(false);
+            result.setErrorType(ConnectionTestResult.ErrorType.UNKNOWN);
+            result.setMessage("Error inesperado: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error inesperado en prueba de conexión", e);
+        }
+
+        return result;
+    }
+
+    /**
+     * Determina el tipo de error basado en la excepción SQL.
+     */
+    private ConnectionTestResult.ErrorType getErrorType(SQLException e) {
+        String message = e.getMessage().toLowerCase();
+
+        if (message.contains("communications link failure") ||
+            message.contains("connection refused") ||
+            message.contains("no route to host")) {
+            return ConnectionTestResult.ErrorType.HOST_ERROR;
+        } else if (message.contains("access denied") ||
+                   message.contains("authentication failed")) {
+            return ConnectionTestResult.ErrorType.AUTHENTICATION_ERROR;
+        } else if (message.contains("unknown database")) {
+            return ConnectionTestResult.ErrorType.DATABASE_ERROR;
+        } else {
+            return ConnectionTestResult.ErrorType.CONNECTION_ERROR;
+        }
+    }
+
+    /**
+     * Genera mensaje de error detallado basado en el tipo de error.
+     */
+    private String getDetailedErrorMessage(SQLException e, String host, String username) {
+        ConnectionTestResult.ErrorType errorType = getErrorType(e);
+
+        switch (errorType) {
+            case HOST_ERROR:
+                return "No se puede conectar al servidor MySQL en '" + host + "'. Verifique que:\n" +
+                       "• La dirección IP/hostname sea correcta\n" +
+                       "• El servidor MySQL esté ejecutándose\n" +
+                       "• El puerto 3306 esté abierto y accesible";
+            case AUTHENTICATION_ERROR:
+                return "Error de autenticación para el usuario '" + username + "'. Verifique que:\n" +
+                       "• El nombre de usuario sea correcto\n" +
+                       "• La contraseña sea correcta\n" +
+                       "• El usuario tenga permisos para conectarse desde este host";
+            case DATABASE_ERROR:
+                return "La base de datos especificada no existe. Verifique que:\n" +
+                       "• El nombre de la base de datos sea correcto\n" +
+                       "• La base de datos haya sido creada en el servidor";
+            case CONNECTION_ERROR:
+            default:
+                return "Error de conexión: " + e.getMessage() + "\n" +
+                       "Verifique la configuración de red y permisos del servidor MySQL.";
         }
     }
     

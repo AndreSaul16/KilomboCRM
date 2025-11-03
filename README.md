@@ -163,6 +163,32 @@ Si encuentras problemas:
 - ✅ Validación automática de esquema
 - ✅ Transacciones y manejo de errores
 
+## 🔍 Análisis de Calidad del Código
+
+### Arquitectura y Principios SOLID
+- ✅ **Clean Architecture**: Capas bien separadas (Domain, Application, Infrastructure, Presentation)
+- ✅ **SRP (Single Responsibility)**: Cada clase tiene una responsabilidad única
+- ✅ **DIP (Dependency Inversion)**: Dependencias apuntan a abstracciones
+- ✅ **ISP (Interface Segregation)**: Interfaces específicas por funcionalidad
+- ✅ **OCP (Open/Closed)**: Código extensible sin modificar existente
+
+### Áreas de Mejora Identificadas
+
+#### 🚨 Críticas (Prioridad Alta)
+- **Duplicación masiva de código**: Patrón try-catch repetido 49+ veces en repositorios
+- **MainFrame sobrecargado**: 509 líneas, viola SRP (maneja navegación, acciones, coordinación)
+- **Métodos largos**: Varios métodos superan las 50 líneas recomendadas
+
+#### ⚠️ Mejoras (Prioridad Media)
+- **Validaciones faltantes**: `DetallePedido` carece de reglas de negocio
+- **Inyección de dependencias**: Instanciación manual en lugar de contenedor DI
+- **ConexionBD grande**: 496 líneas, múltiples responsabilidades
+
+#### 📈 Mejoras Futuras (Prioridad Baja)
+- **Framework DI**: Implementar Spring o similar
+- **Tests unitarios**: Cobertura actual 0%
+- **Documentación API**: Falta documentación de métodos públicos
+
 ## 🏗️ Arquitectura
 
 El proyecto sigue **Clean Architecture** con separación clara en capas:
@@ -259,6 +285,33 @@ Para soporte técnico o preguntas:
 - Abrir un issue en GitHub
 - Revisar la documentación en [ARQUITECTURA.md](ARQUITECTURA.md)
 - Verificar logs de aplicación para debugging
+
+## 🗺️ Roadmap de Mejoras
+
+### ✅ Completado
+- Análisis completo de calidad del código siguiendo SOLID y Clean Code
+- Identificación de áreas críticas de mejora
+- Documentación actualizada con hallazgos
+
+### 🚧 En Progreso
+- [ ] Eliminación de duplicación de manejo de errores en repositorios
+- [ ] Refactorización de MainFrame (dividir responsabilidades)
+- [ ] Mejora de validaciones en DetallePedido
+- [ ] Implementación de patrón Template Method para repositorios
+
+### 📋 Próximas Mejoras (Ver [Próxima actualización.md](Próxima actualización.md))
+- [ ] Inyección de dependencias automática
+- [ ] División de ConexionBD en clases más pequeñas
+- [ ] Tests unitarios con JUnit
+- [ ] Framework de logging centralizado
+- [ ] Documentación de API con JavaDoc
+- [ ] Migración a Spring Boot (futuro lejano)
+
+### 🎯 Métricas de Calidad
+- **Complejidad Ciclomática**: Alta en algunos métodos
+- **Duplicación de Código**: 49+ patrones try-catch repetidos
+- **Cumplimiento SOLID**: 80% (bueno, con áreas de mejora)
+- **Mantenibilidad**: Media (mejorable con refactorización)
 
 ---
 

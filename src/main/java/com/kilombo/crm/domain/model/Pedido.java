@@ -18,6 +18,7 @@ public class Pedido {
     private Integer idCliente;
     private LocalDate fecha;
     private Double total;
+    private String estado;
     
     /**
      * Constructor vacío.
@@ -27,7 +28,7 @@ public class Pedido {
     
     /**
      * Constructor con todos los campos excepto ID.
-     * 
+     *
      * @param idCliente ID del cliente asociado al pedido
      * @param fecha Fecha del pedido
      * @param total Importe total del pedido
@@ -36,12 +37,13 @@ public class Pedido {
         this.idCliente = idCliente;
         this.fecha = fecha;
         this.total = total;
+        this.estado = "PENDIENTE"; // Estado por defecto
         validar();
     }
     
     /**
      * Constructor completo con ID.
-     * 
+     *
      * @param id ID del pedido
      * @param idCliente ID del cliente asociado al pedido
      * @param fecha Fecha del pedido
@@ -52,6 +54,7 @@ public class Pedido {
         this.idCliente = idCliente;
         this.fecha = fecha;
         this.total = total;
+        this.estado = "PENDIENTE"; // Estado por defecto
         validar();
     }
     
@@ -143,6 +146,14 @@ public class Pedido {
     public void setTotal(Double total) {
         this.total = total;
         validarTotal();
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
     
     /**
