@@ -96,33 +96,37 @@ Antes de comenzar, asegúrate de tener instalado:
 
 #### Opción A: Ejecutar JAR empaquetado (Recomendado para usuarios finales)
 
-Esta es la forma más sencilla para usuarios que solo quieren usar la aplicación:
+Esta es la forma más sencilla - ¡solo ejecuta y listo!:
 
 1. **Descargar el JAR empaquetado**
     - Archivo: `KilomboCRM-1.0.0-jar-with-dependencies.jar`
-    - Ubicación: `target/` después de compilar
 
 2. **Requisitos para esta opción:**
     - Java 17+ instalado
-    - MySQL/MariaDB configurado (opcional al inicio)
+    - MySQL/MariaDB ejecutándose (se configura después)
 
-3. **Ejecutar la aplicación**
+3. **Ejecutar la aplicación (¡SOLO ESTE PASO!)**
     ```bash
-    # Desde la carpeta donde está el JAR:
+    # Doble clic en el archivo JAR o ejecutar:
     java -jar KilomboCRM-1.0.0-jar-with-dependencies.jar
     ```
 
-4. **Configurar base de datos (si no tienes una)**
-    - La aplicación se abre sin BD configurada
-    - Ir al panel "Configuración"
-    - Ingresar datos de tu MySQL (host, usuario, password, base de datos)
-    - Probar conexión y guardar
+4. **La aplicación se abre automáticamente**
+    - ✅ No requiere configuración previa
+    - ✅ Funciona sin base de datos inicialmente
+    - ✅ Interfaz completa disponible inmediatamente
 
-5. **Ventajas de esta opción:**
-    - ✅ No requiere Maven ni compilar
-    - ✅ Archivo único portable
-    - ✅ Todas las dependencias incluidas
-    - ✅ Puede iniciarse sin base de datos
+5. **Configurar base de datos cuando lo necesites**
+    - Ve al panel "Configuración" dentro de la aplicación
+    - Ingresa datos de tu MySQL/MariaDB
+    - La aplicación te guía en cada paso
+
+6. **Ventajas de esta opción:**
+    - ✅ Un solo archivo JAR
+    - ✅ Sin instalación compleja
+    - ✅ Funciona inmediatamente
+    - ✅ Configuración opcional posterior
+    - ✅ Portable a cualquier PC con Java
 
 #### Opción B: Ejecutar desde código fuente (Para desarrolladores)
 
@@ -221,33 +225,38 @@ java -jar target/KilomboCRM-1.0.0-jar-with-dependencies.jar
 - Verificar que Java tiene acceso a fuentes del sistema
 - En Windows: ejecutar como administrador si hay problemas de visualización
 
+### 🚀 Guía Rápida para Usuarios Finales
+
+**¿Quieres usar KilomboCRM? ¡Es muy fácil!**
+
+1. **Asegúrate de tener Java 17+** (descárgalo gratis de https://adoptium.net/)
+2. **Descarga el archivo** `KilomboCRM-1.0.0-jar-with-dependencies.jar`
+3. **Ejecuta con doble clic** o usa: `java -jar KilomboCRM-1.0.0-jar-with-dependencies.jar`
+4. **¡La aplicación se abre automáticamente!** Sin configuración previa necesaria
+5. **Cuando quieras datos reales**: Ve a "Configuración" dentro de la app y configura tu base de datos
+
+**¿Necesitas base de datos?** MySQL/MariaDB debe estar ejecutándose, pero la configuras después desde la interfaz.
+
 ### 📞 Soporte
 
-Si encuentras problemas:
+**Si algo no funciona:**
 
-#### Para usuarios del JAR empaquetado:
-1. Ejecutar con logs: `java -jar KilomboCRM-1.0.0-jar-with-dependencies.jar > error_log.txt 2>&1`
-2. Revisar el archivo `error_log.txt` generado
-3. Verificar que Java 17+ está instalado correctamente
-4. Probar la configuración de BD desde la interfaz de la aplicación
+1. **Verifica Java**: Ejecuta `java -version` en terminal
+2. **Para logs detallados**: `java -jar KilomboCRM-1.0.0-jar-with-dependencies.jar > error_log.txt 2>&1`
+3. **Revisa el archivo** `error_log.txt` generado
+4. **Configuración BD**: Usa el panel "Configuración" dentro de la aplicación
 
-#### Para desarrolladores:
-1. Revisar los logs en la consola donde ejecutas el programa
-2. Verificar que todos los pasos de instalación se completaron
-3. Comprobar que MySQL está ejecutándose
-4. Limpiar dependencias: `mvn clean install`
-5. Revisar la documentación en [ARQUITECTURA.md](ARQUITECTURA.md) para detalles técnicos
+### 📋 Opciones Avanzadas (para desarrolladores)
 
-### 📋 Resumen de Opciones de Ejecución
+| Método | Requisitos | Cuándo usarlo |
+|--------|------------|---------------|
+| **JAR Empaquetado** | Java 17+ | **Distribución final** ⭐ |
+| **Código Fuente** | Java 17 + Maven | Desarrollo y personalización |
+| **JAR desde Fuente** | Java 17 + Maven | Testing y despliegue |
 
-| Método | Requisitos | Ventajas | Para quién |
-|--------|------------|----------|------------|
-| **JAR Empaquetado** | Java 17+ | Más sencillo, portable, no requiere compilar | Usuarios finales |
-| **Código Fuente** | Java 17 + Maven | Personalizable, actualizable | Desarrolladores |
-| **JAR desde Fuente** | Java 17 + Maven | Mejor de ambos mundos | Equipos de desarrollo |
+### 🎯 Resumen Ejecutivo
 
-### 🎯 Recomendación
-
-- **Para distribución**: Usa el JAR empaquetado (`KilomboCRM-1.0.0-jar-with-dependencies.jar`)
-- **Para desarrollo**: Compila desde fuente con Maven
-- **Para testing**: Ejecuta el JAR generado después de compilar
+- **Archivo principal**: `KilomboCRM-1.0.0-jar-with-dependencies.jar`
+- **Ejecución**: Doble clic o `java -jar archivo.jar`
+- **Configuración**: Opcional, desde la interfaz de usuario
+- **Requisitos**: Solo Java 17+ y MySQL/MariaDB (opcional inicialmente)
