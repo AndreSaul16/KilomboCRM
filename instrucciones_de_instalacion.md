@@ -4,20 +4,24 @@
 
 **¿Quieres usar KilomboCRM? ¡Es muy fácil!**
 
-### 📋 Opción 1: Instalador Automático (Más Fácil)
+### 📋 Opción 1: JAR Ejecutable (Más Sencillo)
 
-1. **Descarga el instalador**
-   - `KilomboCRM-Installer.msi` (Windows)
-   - Archivo único que instala todo automáticamente
+1. **Descarga el JAR ejecutable**
+   - `KilomboCRM-1.0.0-jar-with-dependencies.jar`
+   - Archivo único que contiene todo lo necesario
 
-2. **Ejecuta el instalador**
-   - Doble clic en `KilomboCRM-Installer.msi`
-   - El instalador detectará y ofrecerá instalar Java y MySQL si no los tienes
-   - Sigue las instrucciones en pantalla
+2. **Ejecuta la aplicación**
+   - Doble clic en el archivo JAR
+   - O usa el comando: `java -jar KilomboCRM-1.0.0-jar-with-dependencies.jar`
 
-3. **¡Listo! La aplicación se instala automáticamente**
-   - Acceso directo en escritorio y menú inicio
-   - Todo configurado y listo para usar
+3. **¡Listo! La aplicación funciona inmediatamente**
+   - ✅ Sin instalación compleja
+   - ✅ Funciona sin base de datos inicialmente
+   - ✅ Configuración opcional posterior
+
+### 📋 Opción 2: Instalador MSI Completo (Próximamente)
+
+*Nota: El instalador MSI automático está preparado pero requiere WiX Toolset instalado en el sistema de desarrollo para generarlo. Por ahora, recomendamos usar la Opción 1.*
 
 ### 📋 Opción 2: Instalación Manual (Si prefieres control total)
 
@@ -236,9 +240,9 @@ java -jar target/KilomboCRM-1.0.0-jar-with-dependencies.jar
 ### 🎯 Resumen Ejecutivo
 
 #### Para Distribución Fácil:
-- **Instalador recomendado**: `KilomboCRM-Installer.msi`
-- **Instala automáticamente**: Java, MySQL y la aplicación
-- **Usuario final**: Solo ejecuta el MSI y listo
+- **Archivo recomendado**: `KilomboCRM-1.0.0-jar-with-dependencies.jar`
+- **Ejecución**: Doble clic - funciona inmediatamente
+- **Usuario final**: Sin instalación, sin configuración previa
 
 #### Para Distribución Avanzada:
 - **Archivo principal**: `KilomboCRM-1.0.0-jar-with-dependencies.jar`
@@ -248,6 +252,6 @@ java -jar target/KilomboCRM-1.0.0-jar-with-dependencies.jar
 
 ### 📦 Archivos para Distribución
 
-1. **Para usuarios principiantes**: `KilomboCRM-Installer.msi`
-2. **Para usuarios avanzados**: `KilomboCRM-1.0.0-jar-with-dependencies.jar`
-3. **Para desarrollo**: Código fuente completo + `KilomboCRM.bat`
+1. **Para todos los usuarios**: `KilomboCRM-1.0.0-jar-with-dependencies.jar` ⭐
+2. **Para desarrollo**: Código fuente completo + `KilomboCRM.bat`
+3. **Instalador MSI**: Preparado para cuando se instale WiX Toolset
