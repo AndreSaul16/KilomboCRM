@@ -1,98 +1,62 @@
 # Instrucciones de Instalación - KilomboCRM
 
-## 🚀 Instalación y Ejecución Paso a Paso
+## 🚀 Guía Rápida para Usuarios Finales
 
-### 📋 Requisitos Previos
+**¿Quieres usar KilomboCRM? ¡Es muy fácil!**
 
-Antes de comenzar, asegúrate de tener instalado:
+### 📋 Lo Único que Necesitas
 
-#### Para ejecución con JAR (recomendado para usuarios finales):
-- **Java 17 o superior** (JDK 17+)
-  - Descargar desde: https://adoptium.net/
-  - Verificar: `java -version`
+1. **Java 17+ instalado** (gratuito)
+   - Descargar desde: https://adoptium.net/
+   - Verificar instalación: `java -version`
 
-- **MySQL 8.0 o superior** (o MariaDB)
-  - Descargar desde: https://dev.mysql.com/downloads/mysql/
-  - Instalar y configurar usuario/password
-  - MySQL Workbench (opcional pero recomendado)
+2. **MySQL/MariaDB ejecutándose** (opcional inicialmente)
+   - Solo si quieres guardar datos reales
+   - Se configura después desde la aplicación
 
-#### Para desarrollo/compilación desde código fuente:
-- **Java 17** (JDK 17)
-  - Descargar desde: https://adoptium.net/
-  - Verificar: `java -version`
+### ▶️ Ejecutar la Aplicación (¡SOLO ESTE PASO!)
 
-- **MySQL 8.0 o superior**
-  - Descargar desde: https://dev.mysql.com/downloads/mysql/
-  - Instalar y configurar usuario/password
-  - MySQL Workbench (opcional pero recomendado)
+1. **Descarga el archivo JAR**
+   - `KilomboCRM-1.0.0-jar-with-dependencies.jar`
 
+2. **Ejecuta con doble clic** o usa el comando:
+   ```bash
+   java -jar KilomboCRM-1.0.0-jar-with-dependencies.jar
+   ```
+
+3. **¡La aplicación se abre automáticamente!**
+   - ✅ Sin configuración previa
+   - ✅ Funciona inmediatamente
+   - ✅ Interfaz completa disponible
+
+### 🗄️ Configurar Base de Datos (Opcional - Después)
+
+Cuando quieras guardar datos reales:
+
+1. **Ve al panel "Configuración"** dentro de la aplicación
+2. **Ingresa los datos de tu MySQL/MariaDB:**
+   - Host: `localhost` (o IP del servidor)
+   - Usuario: tu usuario de MySQL
+   - Contraseña: tu contraseña
+   - Base de datos: nombre de tu BD
+3. **Prueba la conexión** y guarda
+
+### 📦 Información para Desarrolladores
+
+Si quieres modificar el código fuente o compilar desde cero:
+
+#### Requisitos para Desarrollo:
+- **Java 17** (JDK exacto)
 - **Maven 3.6+**
-  - Descargar desde: https://maven.apache.org/download.cgi
-  - Verificar: `mvn -version`
+- **MySQL 8.0+**
 
-### 📦 Paso 1: Preparar el Proyecto
+#### Pasos para Desarrollo:
+1. **Clonar/compilar el proyecto**
+2. **Configurar BD** (opcional inicialmente)
+3. **Ejecutar**: `mvn exec:java -Dexec.mainClass="com.kilombo.crm.presentation.MainFrame"`
+4. **Generar JAR**: `mvn clean package`
 
-1. **Descargar el proyecto**
-   - El proyecto viene en un archivo `.zip`
-   - Extraer el contenido en una carpeta (ej: `C:\Proyectos\KilomboCRM`)
-
-2. **Verificar estructura**
-   ```
-   KilomboCRM/
-   ├── src/
-   ├── pom.xml
-   ├── README.md
-   ├── ARQUITECTURA.md
-   └── .gitignore
-   ```
-
-### 🗄️ Paso 2: Configurar Base de Datos MySQL
-
-1. **Abrir MySQL Workbench** o **MySQL Command Line Client**
-
-2. **Crear la base de datos**
-   ```sql
-   -- Ejecutar este comando en MySQL:
-   CREATE DATABASE IF NOT EXISTS kilombo
-   CHARACTER SET utf8mb4
-   COLLATE utf8mb4_unicode_ci;
-   ```
-
-3. **Crear las tablas**
-   - Abrir el archivo `src/main/resources/database/schema.sql`
-   - Copiar todo el contenido
-   - Pegar y ejecutar en MySQL Workbench
-
-4. **Insertar datos de prueba** (opcional)
-   - Abrir el archivo `src/main/resources/database/data.sql`
-   - Copiar todo el contenido
-   - Pegar y ejecutar en MySQL Workbench
-
-5. **Crear usuario de aplicación** (opcional, si no usas root)
-   ```sql
-   CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin';
-   GRANT ALL PRIVILEGES ON kilombo.* TO 'admin'@'localhost';
-   FLUSH PRIVILEGES;
-   ```
-
-### ⚙️ Paso 3: Configurar la Aplicación
-
-1. **Editar archivo de configuración**
-   - Abrir `src/main/resources/application.properties`
-   - Modificar las credenciales de BD si es necesario:
-   ```properties
-   # Cambiar si usas usuario/password diferentes
-   db.username=admin
-   db.password=admin
-   ```
-
-2. **Verificar configuración**
-   - Asegurarse que la URL apunta a tu instalación local:
-   ```properties
-   db.url=jdbc:mysql://localhost:3306/kilombo?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8
-   ```
-
-### ▶️ Paso 4: Ejecutar la Aplicación
+### 🔧 Solución de Problemas
 
 #### Opción A: Ejecutar JAR empaquetado (Recomendado para usuarios finales)
 
