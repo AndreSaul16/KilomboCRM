@@ -1,6 +1,8 @@
 # Próxima Actualización - KilomboCRM
 ## Plan de Mejoras Críticas y Mejores Prácticas
 
+**NOTA IMPORTANTE**: El servicio de envío de emails presenta un problema conocido que no se pudo resolver en el tiempo disponible para la entrega. El sistema funciona correctamente para todas las demás funcionalidades.
+
 ### 📋 Lista Completa de Áreas de Mejora
 
 #### 🚨 PRIORIDAD CRÍTICA (Implementar inmediatamente)
