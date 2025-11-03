@@ -173,8 +173,8 @@ public class MessageConfirmationDialog extends JDialog {
 
             logger.info("URL mailto generada: " + mailtoUrl);
 
-            // Abrir en el navegador por defecto
-            Desktop.getDesktop().browse(URI.create(mailtoUrl));
+            // Abrir en el navegador por defecto usando URI.create()
+            Desktop.getDesktop().browse(new URI(mailtoUrl));
 
             JOptionPane.showMessageDialog(
                 this,
